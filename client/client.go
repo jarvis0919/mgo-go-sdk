@@ -1,8 +1,8 @@
 package client
 
 import (
-	"mgo-go-sdk/client/httpconn"
-	"mgo-go-sdk/global"
+	"github.com/jarvis0919/mgo-go-sdk/client/httpconn"
+	"github.com/jarvis0919/mgo-go-sdk/global"
 )
 
 type Client struct {

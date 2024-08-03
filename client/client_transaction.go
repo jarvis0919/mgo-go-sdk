@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"mgo-go-sdk/account/keypair"
-	"mgo-go-sdk/client/httpconn"
-	"mgo-go-sdk/model"
-	"mgo-go-sdk/model/request"
-	"mgo-go-sdk/model/respone"
+
+	"github.com/jarvis0919/mgo-go-sdk/account/keypair"
+	"github.com/jarvis0919/mgo-go-sdk/client/httpconn"
+	"github.com/jarvis0919/mgo-go-sdk/model"
+	"github.com/jarvis0919/mgo-go-sdk/model/request"
+	"github.com/jarvis0919/mgo-go-sdk/model/respone"
 
 	"github.com/tidwall/gjson"
 )

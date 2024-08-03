@@ -3,9 +3,10 @@ package keypair
 import (
 	"encoding/base64"
 	"encoding/hex"
-	"mgo-go-sdk/global"
-	"mgo-go-sdk/model"
-	"mgo-go-sdk/utils"
+
+	"github.com/jarvis0919/mgo-go-sdk/global"
+	"github.com/jarvis0919/mgo-go-sdk/model"
+	"github.com/jarvis0919/mgo-go-sdk/utils"
 )
 
 func FetchKeyPair(value string) (model.MgoKeyPair, error) {

@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"mgo-go-sdk/account/signer"
-	"mgo-go-sdk/utils"
 	"time"
+
+	"github.com/jarvis0919/mgo-go-sdk/account/signer"
+	"github.com/jarvis0919/mgo-go-sdk/utils"
 
 	"github.com/ethereum/go-ethereum/crypto"
 )

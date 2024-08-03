@@ -3,7 +3,8 @@ package signer
 import (
 	"errors"
 	"fmt"
-	"mgo-go-sdk/global"
+
+	"github.com/jarvis0919/mgo-go-sdk/global"
 
 	"github.com/tyler-smith/go-bip39"
 )

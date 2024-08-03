@@ -6,9 +6,10 @@ import (
 	"encoding/json"
 	"io"
 
-	"mgo-go-sdk/model/request"
 	"net/http"
 	"time"
+
+	"github.com/jarvis0919/mgo-go-sdk/model/request"
 
 	"golang.org/x/time/rate"
 )

@@ -7,10 +7,11 @@ import (
 	"encoding/hex"
 	"fmt"
 	"log"
-	"mgo-go-sdk/global"
-	"mgo-go-sdk/model"
-	"mgo-go-sdk/utils"
 	"strings"
+
+	"github.com/jarvis0919/mgo-go-sdk/global"
+	"github.com/jarvis0919/mgo-go-sdk/model"
+	"github.com/jarvis0919/mgo-go-sdk/utils"
 )
 
 type InputObjectKind map[string]interface{}
@@ -18,9 +19,9 @@ type ObjectId = HexData
 type Digest = Base64Data
 
 type ObjectRef struct {
-	Digest   string   `json:"digest"`
-	ObjectId ObjectId `json:"objectId"`
-	Version  int64    `json:"version"`
+	Digest   string   `json:"digest"   yaml:"digest"`
+	ObjectId ObjectId `json:"objectId" yaml:"objectId"`
+	Version  int64    `json:"version"  yaml:"version"`
 }
 
 type SigScheme string
@@ -83,24 +84,24 @@ func (h Base64Data) Data() []byte {
 
 type SignedTransaction struct {
 	// transaction data bytes
-	TxBytes string `json:"tx_bytes"`
+	TxBytes string `json:"tx_bytes" yaml:"txBytes"`
 
 	// Flag of the signature scheme that is used.
-	SigScheme SigScheme `json:"sig_scheme"`
+	SigScheme SigScheme `json:"sig_scheme" yaml:"sigScheme"`
 
 	// transaction signature
-	Signature *Base64Data `json:"signature"`
+	Signature *Base64Data `json:"signature" yaml:"signature"`
 
 	// signer's public key
-	PublicKey *Base64Data `json:"pub_key"`
+	PublicKey *Base64Data `json:"pub_key" yaml:"publicKey"`
 }
 
 type SignedTransactionSerializedSig struct {
 	// transaction data bytes
-	TxBytes string `json:"tx_bytes"`
+	TxBytes string `json:"tx_bytes" yaml:"txBytes"`
 
 	// transaction signature
-	Signature string `json:"signature"`
+	Signature string `json:"signature" yaml:"signature"`
 }
 
 var IntentBytes = []byte{0, 0, 0}

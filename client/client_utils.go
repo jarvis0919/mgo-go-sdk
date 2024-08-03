@@ -1,8 +1,8 @@
 package client
 
 import (
-	"mgo-go-sdk/account/signer"
-	"mgo-go-sdk/global"
+	"github.com/jarvis0919/mgo-go-sdk/account/signer"
+	"github.com/jarvis0919/mgo-go-sdk/global"
 )
 
 func (c *Client) GetSignerAddress(s signer.Signer) string {

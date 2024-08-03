@@ -3,7 +3,8 @@ package client
 import (
 	"context"
 	"errors"
-	"mgo-go-sdk/client/httpconn"
+
+	"github.com/jarvis0919/mgo-go-sdk/client/httpconn"
 
 	"github.com/tidwall/gjson"
 )

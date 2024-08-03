@@ -2,8 +2,9 @@ package signer
 
 import (
 	"errors"
-	"mgo-go-sdk/global"
-	"mgo-go-sdk/model"
+
+	"github.com/jarvis0919/mgo-go-sdk/global"
+	"github.com/jarvis0919/mgo-go-sdk/model"
 
 	"github.com/btcsuite/btcd/btcutil/bech32"
 )

@@ -1,1 +1,1 @@
-# mgo-go-sdk
+# github.com/jarvis0919/mgo-go-sdk

@@ -1,16 +1,16 @@
 package respone
 
-import "mgo-go-sdk/model"
+import "github.com/jarvis0919/mgo-go-sdk/model"
 
 type MgoTransactionBlockResponse struct {
-	Digest                  string                 `json:"digest"`
-	Transaction             model.TransactionBlock `json:"transaction,omitempty"`
-	RawTransaction          string                 `json:"rawTransaction,omitempty"`
-	Effects                 model.Effects          `json:"effects,omitempty"`
-	Events                  []model.EventResponse  `json:"events,omitempty"`
-	ObjectChanges           []model.ObjectChange   `json:"objectChanges,omitempty"`
-	BalanceChanges          []model.BalanceChanges `json:"balanceChanges,omitempty"`
-	TimestampMs             string                 `json:"timestampMs,omitempty"`
-	Checkpoint              string                 `json:"checkpoint,omitempty"`
-	ConfirmedLocalExecution bool                   `json:"confirmedLocalExecution,omitempty"`
+	Digest                  string                 `json:"digest"                            yaml:"digest"`
+	Transaction             model.TransactionBlock `json:"transaction,omitempty"             yaml:"transaction"`
+	RawTransaction          string                 `json:"rawTransaction,omitempty"          yaml:"rawTransaction"`
+	Effects                 model.Effects          `json:"effects,omitempty"                 yaml:"effects"`
+	Events                  []model.EventResponse  `json:"events,omitempty"                  yaml:"events"`
+	ObjectChanges           []model.ObjectChange   `json:"objectChanges,omitempty"           yaml:"objectChanges"`
+	BalanceChanges          []model.BalanceChanges `json:"balanceChanges,omitempty"          yaml:"balanceChanges"`
+	TimestampMs             string                 `json:"timestampMs,omitempty"             yaml:"timestampMs"`
+	Checkpoint              string                 `json:"checkpoint,omitempty"              yaml:"checkpoint"`
+	ConfirmedLocalExecution bool                   `json:"confirmedLocalExecution,omitempty" yaml:"confirmedLocalExecution"`
 }

@@ -3,10 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"mgo-go-sdk/account/signer"
-	"mgo-go-sdk/utils"
 	"strings"
 	"time"
+
+	"github.com/jarvis0919/mgo-go-sdk/account/signer"
+	"github.com/jarvis0919/mgo-go-sdk/utils"
 )
 
 func main() {
@@ -25,18 +26,18 @@ func main() {
 			fmt.Println(err)
 		}
 		SignObject, _ := json.Marshal(struct {
-			Address  string `json:"address" form:"address" `
-			Time     string `json:"time" form:"time"`
-			SignType string `json:"signType" form:"signType"`
+			Address  string `json:"address"  yaml:"address"  form:"address"`
+			Time     string `json:"time"     yaml:"time"     form:"time"`
+			SignType string `json:"signType" yaml:"signType" form:"signType"`
 		}{
 			Address:  s.MgoAddressTestNet,
 			Time:     time.Now().Format("2006-01-02"),
 			SignType: "Register",
 		})
 		SignObject2, _ := json.Marshal(struct {
-			Address  string `json:"address" form:"address" `
-			Time     string `json:"time" form:"time"`
-			SignType string `json:"signType" form:"signType"`
+			Address  string `json:"address"  yaml:"address"  form:"address"`
+			Time     string `json:"time"     yaml:"time"     form:"time"`
+			SignType string `json:"signType" yaml:"signType" form:"signType"`
 		}{
 			Address:  s.MgoAddressTestNet,
 			Time:     time.Now().Format("2006-01-02"),

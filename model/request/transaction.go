@@ -1,33 +1,33 @@
 package request
 
 import (
-	"mgo-go-sdk/account/signer"
-	"mgo-go-sdk/model"
+	"github.com/jarvis0919/mgo-go-sdk/account/signer"
+	"github.com/jarvis0919/mgo-go-sdk/model"
 )
 
 type TransferMgoRequest struct {
 	// the transaction signer's Mgo address
-	Signer      signer.Signer `json:"signer"`
-	MgoObjectId string        `json:"mgoObjectId"`
+	Signer      signer.Signer `json:"signer"      yaml:"signer"`
+	MgoObjectId string        `json:"mgoObjectId" yaml:"mgoObjectId"`
 	// the gas budget, the transaction will fail if the gas cost exceed the budget
-	GasBudget string `json:"gasBudget"`
-	Recipient string `json:"recipient"`
-	Amount    string `json:"amount"`
+	GasBudget string `json:"gasBudget" yaml:"gasBudget"`
+	Recipient string `json:"recipient" yaml:"recipient"`
+	Amount    string `json:"amount"    yaml:"amount"`
 }
 
 type SignAndExecuteTransactionBlockRequest struct {
 	TxnMetaData model.TxnMetaData
 	// the address private key to sign the transaction
 	Signer  signer.Signer
-	Options TransactionBlockOptions `json:"options"`
+	Options TransactionBlockOptions `json:"options" yaml:"options"`
 	// The optional enumeration values are: `WaitForEffectsCert`, or `WaitForLocalExecution`
-	RequestType string `json:"requestType"`
+	RequestType string `json:"requestType" yaml:"requestType"`
 }
 type TransactionBlockOptions struct {
-	ShowInput          bool `json:"showInput,omitempty"`
-	ShowRawInput       bool `json:"showRawInput,omitempty"`
-	ShowEffects        bool `json:"showEffects,omitempty"`
-	ShowEvents         bool `json:"showEvents,omitempty"`
-	ShowObjectChanges  bool `json:"showObjectChanges,omitempty"`
-	ShowBalanceChanges bool `json:"showBalanceChanges,omitempty"`
+	ShowInput          bool `json:"showInput,omitempty"          yaml:"showInput"`
+	ShowRawInput       bool `json:"showRawInput,omitempty"       yaml:"showRawInput"`
+	ShowEffects        bool `json:"showEffects,omitempty"        yaml:"showEffects"`
+	ShowEvents         bool `json:"showEvents,omitempty"         yaml:"showEvents"`
+	ShowObjectChanges  bool `json:"showObjectChanges,omitempty"  yaml:"showObjectChanges"`
+	ShowBalanceChanges bool `json:"showBalanceChanges,omitempty" yaml:"showBalanceChanges"`
 }

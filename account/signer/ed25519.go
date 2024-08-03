@@ -6,12 +6,14 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"mgo-go-sdk/bcs"
-	"mgo-go-sdk/global"
 
-	// "mgo-go-sdk/keypair"
-	"mgo-go-sdk/utils"
+	"github.com/jarvis0919/mgo-go-sdk/bcs"
+	"github.com/jarvis0919/mgo-go-sdk/global"
+
+	// "github.com/jarvis0919/mgo-go-sdk/keypair"
 	"strings"
+
+	"github.com/jarvis0919/mgo-go-sdk/utils"
 )
 
 // SignerEd25519 结构体定义
