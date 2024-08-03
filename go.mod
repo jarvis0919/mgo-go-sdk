@@ -1,4 +1,4 @@
-module mgo-go-sdk
+module github.com/jarvis0919/mgo-go-sdk
 
 go 1.22.1
 
