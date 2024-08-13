@@ -1,85 +1,92 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
-
-	"github.com/go-resty/resty/v2"
+	"github.com/jarvis0919/mgo-go-sdk/account/signer"
+	"github.com/jarvis0919/mgo-go-sdk/client"
+	"github.com/jarvis0919/mgo-go-sdk/global"
+	"github.com/jarvis0919/mgo-go-sdk/model"
+	"github.com/jarvis0919/mgo-go-sdk/model/request"
+	"github.com/jarvis0919/mgo-go-sdk/utils"
+	"os"
 )
 
-type GETHData struct {
-	Jsonrpc string `json:"jsonrpc" yaml:"jsonrpc"`
-	ID      int    `json:"id"      yaml:"iD"`
-	Result  Block  `json:"result"  yaml:"result"`
-}
-type Block struct {
-	BlockHash            string        `json:"blockHash"            yaml:"blockHash"`
-	BlockNumber          string        `json:"blockNumber"          yaml:"blockNumber"`
-	From                 string        `json:"from"                 yaml:"from"`
-	Gas                  string        `json:"gas"                  yaml:"gas"`
-	GasPrice             string        `json:"gasPrice"             yaml:"gasPrice"`
-	MaxFeePerGas         string        `json:"maxFeePerGas"         yaml:"maxFeePerGas"`
-	MaxPriorityFeePerGas string        `json:"maxPriorityFeePerGas" yaml:"maxPriorityFeePerGas"`
-	Hash                 string        `json:"hash"                 yaml:"hash"`
-	Input                string        `json:"input"                yaml:"input"`
-	Nonce                string        `json:"nonce"                yaml:"nonce"`
-	To                   string        `json:"to"                   yaml:"to"`
-	TransactionIndex     string        `json:"transactionIndex"     yaml:"transactionIndex"`
-	Value                string        `json:"value"                yaml:"value"`
-	Type                 string        `json:"type"                 yaml:"type"`
-	AccessList           []interface{} `json:"accessList"           yaml:"accessList"`
-	ChainID              string        `json:"chainId"              yaml:"chainID"`
-	V                    string        `json:"v"                    yaml:"v"`
-	R                    string        `json:"r"                    yaml:"r"`
-	S                    string        `json:"s"                    yaml:"s"`
-	YParity              string        `json:"yParity"              yaml:"yParity"`
-}
+var ctx = context.Background()
+var devCli = client.NewMgoClient(global.MgoDevnet)
 
-func main() {
-	client := resty.New()
-	baseURL := "https://api-testnet.bscscan.com/api"
-	module := "proxy"
-	action := "eth_getTransactionByHash"
-	txhash := "0xf679470e0416c57128b9407992cbfddfaec4cf9fd7041dc3ec478cd93721545c"
-	apikey := "7K31VQWR41RQNTSWQJ8BA1R2CJJH5NEDG3"
-
-	var blockData GETHData
-	_, err := client.R().
-		SetQueryParams(map[string]string{
-			"module": module,
-			"action": action,
-			"txhash": txhash,
-			"apikey": apikey,
-		}).SetResult(&blockData).
-		Get(baseURL)
+func getMoveCallData() (*model.TxnMetaData, error) {
+	gas := "0x9e9944e470b44c1363409505ef6d154562572a97cbca88dccfd0d972858b54a5"
+	req := request.MoveCallRequest{
+		Signer:          "0x6d5ae691047b8e55cb3fc84da59651c5bae57d2970087038c196ed501e00697b",
+		PackageObjectId: "0x0000000000000000000000000000000000000000000000000000000000000002",
+		Module:          "mgo",
+		Function:        "transfer",
+		TypeArguments:   []interface{}{},
+		Arguments: []interface{}{
+			"0x171e4c8a943fd30567a90a4d3293c06a3ebd317c5f4b8a119e942264ffa4e122",
+			"0x6d5ae691047b8e55cb3fc84da59651c5bae57d2970087038c196ed501e00697b",
+		},
+		Gas:       &gas,
+		GasBudget: "1000",
+	}
+	return devCli.MoveCall(ctx, req)
+}
+func getSigner() (*signer.SignerEd25519, error) {
+	// 文件中的私钥字符串为  ['private_key1','private_key2']
+	bytes, err := os.ReadFile("private_keys.json")
 	if err != nil {
-		// global.GVA_LOG.Error("Error while making request:", zap.Error(err))
-		return
+		return nil, err
+	}
+	store := []string{}
+	err = json.Unmarshal(bytes, &store)
+	if err != nil {
+		return nil, err
 	}
 
-	if blockData.Result.BlockNumber == "" {
-		// global.GVA_LOG.Error("", zap.Error(err))
+	key, err := signer.NewEd25519SignerFromPrivateKey("0xa9c6efc5ffc3372f29b108b5ac039f3cf8d411b953b9d212f48b22c3620a5a56")
+	if err != nil {
+		return nil, err
+	}
+	return key, nil
+}
+
+func moveCall() {
+	// 1. 先调用 moveCall 生成交易数据
+	// 2. 使用私钥签署
+
+	// 1.
+	txnMetaData, err := getMoveCallData()
+	if err != nil {
+		fmt.Printf("%v", err)
 		return
 	}
+	utils.JsonPrint(txnMetaData)
+	// 2.
+	ed25519Signer, err := getSigner()
+	if err != nil {
+		fmt.Printf("%v", err)
+		return
+	}
+	executeRes, err := devCli.SignAndExecuteTransactionBlock(ctx, request.SignAndExecuteTransactionBlockRequest{
+		TxnMetaData: *txnMetaData,
+		Signer:      ed25519Signer,
+		// only fetch the effects field
+		Options: request.TransactionBlockOptions{
+			ShowInput:    true,
+			ShowRawInput: true,
+			ShowEffects:  true,
+		},
+		RequestType: "WaitForLocalExecution",
+	})
+	if err != nil {
+		fmt.Printf("%v", err)
+		return
+	}
+	fmt.Println(executeRes)
 
-	fmt.Println(blockData.Result.Input[2:10])
-	fmt.Println(blockData.Result.Input[10:74])
-	fmt.Println(blockData.Result.Input[74:])
-	// Calculate 10^18
-	// exp := new(big.Int).Exp(big.NewInt(10), big.NewInt(18), nil)
-	// expRat := new(big.Rat).SetInt(exp)
-	// fmt.Println("10^18 as a rational:", expRat)
-
-	// oneMinusDrawFee := big.NewInt(int64((2.1333333318 - 0.1) * 1e10))
-
-	// // Create a rational number representing 0.9 (9/10)
-	// ten := big.NewInt(1e10)
-	// factor := new(big.Rat).SetFrac(oneMinusDrawFee, ten)
-
-	// // Calculate 0.9 * 10^18
-	// resultRat := new(big.Rat).Mul(factor, expRat)
-
-	// resultInt := new(big.Int)
-	// resultRat.Num().Div(resultRat.Num(), resultRat.Denom())
-	// resultInt = resultRat.Num()
-	// fmt.Println("Hello, World! as an integer:", resultInt)
+}
+func main() {
+	moveCall()
 }

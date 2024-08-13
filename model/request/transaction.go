@@ -31,3 +31,23 @@ type TransactionBlockOptions struct {
 	ShowObjectChanges  bool `json:"showObjectChanges,omitempty"  yaml:"showObjectChanges"`
 	ShowBalanceChanges bool `json:"showBalanceChanges,omitempty" yaml:"showBalanceChanges"`
 }
+type MoveCallRequest struct {
+	// the transaction signer's Sui address
+	Signer string `json:"signer"`
+	// the package containing the module and function
+	PackageObjectId string `json:"packageObjectId"`
+	// the specific module in the package containing the function
+	Module string `json:"module"`
+	// the function to be called
+	Function string `json:"function"`
+	// the type arguments to the function
+	TypeArguments []interface{} `json:"typeArguments"`
+	// the arguments to the function
+	Arguments []interface{} `json:"arguments"`
+	// gas object to be used in this transaction, node will pick one from the signer's possession if not provided
+	Gas *string `json:"gas"`
+	// the gas budget, the transaction will fail if the gas cost exceed the budget
+	GasBudget string `json:"gasBudget"`
+
+	ExecutionMode string `json:"executionMode"`
+}
