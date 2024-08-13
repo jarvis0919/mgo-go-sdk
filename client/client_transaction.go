@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"crypto/ed25519"
 	"encoding/json"
 	"errors"
 
@@ -41,7 +42,7 @@ func (c *Client) TransferMgo(ctx context.Context, req request.TransferMgoRequest
 
 func (s *Client) SignAndExecuteTransactionBlock(ctx context.Context, req request.SignAndExecuteTransactionBlockRequest) (respone.MgoTransactionBlockResponse, error) {
 	var rsp respone.MgoTransactionBlockResponse
-	signedTxn := keypair.SignSerializedSigWith(&req.TxnMetaData, req.Signer.PrivateKeyBytes(), s.net)
+	signedTxn := keypair.SignSerializedSigWith(&req.TxnMetaData, ed25519.NewKeyFromSeed(req.Signer.PrivateKeyBytes()), s.net)
 	respBytes, err := s.conn.Request(ctx, httpconn.Operation{
 		Method: "mgo_executeTransactionBlock",
 		Params: []interface{}{
