@@ -32,7 +32,7 @@ type TransactionBlockOptions struct {
 	ShowBalanceChanges bool `json:"showBalanceChanges,omitempty" yaml:"showBalanceChanges"`
 }
 type MoveCallRequest struct {
-	// the transaction signer's Sui address
+	// the transaction signer's Mgo address
 	Signer string `json:"signer"`
 	// the package containing the module and function
 	PackageObjectId string `json:"packageObjectId"`
@@ -50,4 +50,13 @@ type MoveCallRequest struct {
 	GasBudget string `json:"gasBudget"`
 
 	ExecutionMode string `json:"executionMode"`
+}
+
+type MgoSubscribeEventsRequest struct {
+	// the event query criteria.
+	MgoEventFilter interface{} `json:"mgoEventFilter"`
+}
+type MgoSubscribeTransactionsRequest struct {
+	// the transaction query criteria.
+	TransactionFilter interface{} `json:"filter"`
 }
