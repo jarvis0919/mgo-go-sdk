@@ -26,5 +26,5 @@ go.work.sum
 
 .idea
 examples
-examples/
+examples/**
 private_keys.json
