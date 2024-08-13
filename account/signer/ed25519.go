@@ -87,7 +87,7 @@ func (s *SignerEd25519) Sign(message []byte) []byte {
 	header = []byte{byte(global.PersonalMessage), 0, 0}
 	header = append(header, bcs.ULEBEncode(uint64(len(message)))...)
 	message = append(header, message...)
-	message = ed25519.Sign(s.PrivateKey, utils.Keccak256(message))
+	message = ed25519.Sign(s.PrivateKey, utils.Blake2bv1(message))
 	public := s.PublicKeyBytes()
 	signData := append(message, public...)
 	signData = append([]byte{byte(global.Ed25519Flag)}, signData...)
