@@ -58,3 +58,25 @@ func (c *Client) MgoXGetAllCoins(ctx context.Context, req request.MgoXGetAllCoin
 	}
 	return rsp, nil
 }
+
+// MgoXGetCoinMetadata implements the method `mgox_getCoinMetadata`, gets metadata(e.g., symbol, decimals) for a coin.
+func (c *Client) MgoXGetCoinMetadata(ctx context.Context, req request.MgoXGetCoinMetadataRequest) (response.CoinMetadataResponse, error) {
+	var rsp response.CoinMetadataResponse
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "mgox_getCoinMetadata",
+		Params: []interface{}{
+			req.CoinType,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}

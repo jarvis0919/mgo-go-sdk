@@ -29,3 +29,12 @@ type CoinData struct {
 	LockedUntilEpoch    uint64 `json:"lockedUntilEpoch"`
 	PreviousTransaction string `json:"previousTransaction"`
 }
+
+type CoinMetadataResponse struct {
+	Id          string `json:"id"`
+	Decimals    int    `json:"decimals"`
+	Name        string `json:"name"`
+	Symbol      string `json:"symbol"`
+	Description string `json:"description"`
+	IconUrl     string `json:"iconUrl"`
+}

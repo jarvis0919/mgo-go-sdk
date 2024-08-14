@@ -13,3 +13,7 @@ type MgoXGetAllCoinsRequest struct {
 	// maximum number of items per page
 	Limit uint64 `json:"limit" validate:"lte=50"`
 }
+
+type MgoXGetCoinMetadataRequest struct {
+	CoinType string `json:"coinType"`
+}
