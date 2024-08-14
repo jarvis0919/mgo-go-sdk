@@ -40,6 +40,31 @@ func (c *Client) TransferMgo(ctx context.Context, req request.TransferMgoRequest
 	return rsp, nil
 }
 
+func (c *Client) TransferObject(ctx context.Context, req request.TransferObjectRequest) (model.TxnMetaData, error) {
+	var rsp model.TxnMetaData
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "unsafe_transferObject",
+		Params: []interface{}{
+			c.GetSignerAddress(req.Signer),
+			req.ObjectId,
+			req.Gas,
+			req.GasBudget,
+			req.Recipient,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
+
 func (s *Client) SignAndExecuteTransactionBlock(ctx context.Context, req request.SignAndExecuteTransactionBlockRequest) (respone.MgoTransactionBlockResponse, error) {
 	var rsp respone.MgoTransactionBlockResponse
 	signedTxn := keypair.SignSerializedSigWith(&req.TxnMetaData, ed25519.NewKeyFromSeed(req.Signer.PrivateKeyBytes()), s.net)

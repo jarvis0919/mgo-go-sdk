@@ -15,6 +15,17 @@ type TransferMgoRequest struct {
 	Amount    string `json:"amount"    yaml:"amount"`
 }
 
+type TransferObjectRequest struct {
+	// the transaction signer's Mgo address
+	Signer   signer.Signer `json:"signer"      yaml:"signer"`
+	ObjectId string        `json:"objectId"`
+	// gas object to be used in this transaction, node will pick one from the signer's possession if not provided
+	Gas string `json:"gas"`
+	// the gas budget, the transaction will fail if the gas cost exceed the budget
+	GasBudget string `json:"gasBudget"`
+	Recipient string `json:"recipient"`
+}
+
 type SignAndExecuteTransactionBlockRequest struct {
 	TxnMetaData model.TxnMetaData
 	// the address private key to sign the transaction

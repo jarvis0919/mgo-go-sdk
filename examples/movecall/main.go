@@ -17,7 +17,7 @@ var ctx = context.Background()
 var devCli = client.NewMgoClient(global.MgoDevnet)
 
 func getMoveCallData() (*model.TxnMetaData, error) {
-	gas := "0x9e9944e470b44c1363409505ef6d154562572a97cbca88dccfd0d972858b54a5"
+	gas := "0xf8639aa553c08333b7a8c57bab0394776d959870421945494b6c84f4d12b9ecc"
 	req := request.MoveCallRequest{
 		Signer:          "0x6d5ae691047b8e55cb3fc84da59651c5bae57d2970087038c196ed501e00697b",
 		PackageObjectId: "0x0000000000000000000000000000000000000000000000000000000000000002",
@@ -26,10 +26,10 @@ func getMoveCallData() (*model.TxnMetaData, error) {
 		TypeArguments:   []interface{}{},
 		Arguments: []interface{}{
 			"0x171e4c8a943fd30567a90a4d3293c06a3ebd317c5f4b8a119e942264ffa4e122",
-			"0x6d5ae691047b8e55cb3fc84da59651c5bae57d2970087038c196ed501e00697b",
+			"0x0cafa361487490f306c0b4c3e4cf0dc6fd584c5259ab1d5457d80a9e2170e238",
 		},
 		Gas:       &gas,
-		GasBudget: "1000",
+		GasBudget: "10000000",
 	}
 	return devCli.MoveCall(ctx, req)
 }
