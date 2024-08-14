@@ -65,10 +65,10 @@ func (c *Client) TransferObject(ctx context.Context, req request.TransferObjectR
 	return rsp, nil
 }
 
-func (s *Client) SignAndExecuteTransactionBlock(ctx context.Context, req request.SignAndExecuteTransactionBlockRequest) (response.MgoTransactionBlockResponse, error) {
+func (c *Client) SignAndExecuteTransactionBlock(ctx context.Context, req request.SignAndExecuteTransactionBlockRequest) (response.MgoTransactionBlockResponse, error) {
 	var rsp response.MgoTransactionBlockResponse
-	signedTxn := keypair.SignSerializedSigWith(&req.TxnMetaData, ed25519.NewKeyFromSeed(req.Signer.PrivateKeyBytes()), s.net)
-	respBytes, err := s.conn.Request(ctx, httpconn.Operation{
+	signedTxn := keypair.SignSerializedSigWith(&req.TxnMetaData, ed25519.NewKeyFromSeed(req.Signer.PrivateKeyBytes()), c.net)
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
 		Method: "mgo_executeTransactionBlock",
 		Params: []interface{}{
 			signedTxn.TxBytes,
@@ -95,14 +95,66 @@ func (s *Client) SignAndExecuteTransactionBlock(ctx context.Context, req request
 }
 
 // MergeCoins implements the method `unsafe_mergeCoins`, creates an unsigned transaction to merge multiple coins into one coin.
-func (s *Client) MergeCoins(ctx context.Context, req request.MergeCoinsRequest) (model.TxnMetaData, error) {
+func (c *Client) MergeCoins(ctx context.Context, req request.MergeCoinsRequest) (model.TxnMetaData, error) {
 	var rsp model.TxnMetaData
-	respBytes, err := s.conn.Request(ctx, httpconn.Operation{
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
 		Method: "unsafe_mergeCoins",
 		Params: []interface{}{
 			req.Signer,
 			req.PrimaryCoin,
 			req.CoinToMerge,
+			req.Gas,
+			req.GasBudget,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
+
+// SplitCoin implements the method `unsafe_splitCoin`, creates an unsigned transaction to split a coin object into multiple coins.
+func (c *Client) SplitCoin(ctx context.Context, req request.SplitCoinRequest) (model.TxnMetaData, error) {
+	var rsp model.TxnMetaData
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "unsafe_splitCoin",
+		Params: []interface{}{
+			req.Signer,
+			req.CoinObjectId,
+			req.SplitAmounts,
+			req.Gas,
+			req.GasBudget,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
+
+// SplitCoinEqual implements the method `unsafe_splitCoinEqual`, creates an unsigned transaction to split a coin object into multiple equal-size coins.
+func (c *Client) SplitCoinEqual(ctx context.Context, req request.SplitCoinEqualRequest) (model.TxnMetaData, error) {
+	var rsp model.TxnMetaData
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "unsafe_splitCoinEqual",
+		Params: []interface{}{
+			req.Signer,
+			req.CoinObjectId,
+			req.SplitCount,
 			req.Gas,
 			req.GasBudget,
 		},

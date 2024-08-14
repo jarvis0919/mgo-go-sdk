@@ -93,3 +93,25 @@ type MergeCoinsRequest struct {
 	// the gas budget, the transaction will fail if the gas cost exceed the budget
 	GasBudget string `json:"gasBudget"`
 }
+
+type SplitCoinRequest struct {
+	// the transaction signer's Mgo address
+	Signer       string   `json:"signer"`
+	CoinObjectId string   `json:"coinObjectId"`
+	SplitAmounts []string `json:"splitAmounts"`
+	// gas object to be used in this transaction, node will pick one from the signer's possession if not provided
+	Gas string `json:"gas"`
+	// the gas budget, the transaction will fail if the gas cost exceed the budget
+	GasBudget string `json:"gasBudget"`
+}
+
+type SplitCoinEqualRequest struct {
+	// the transaction signer's Mgo address
+	Signer       string `json:"signer"`
+	CoinObjectId string `json:"coinObjectId"`
+	SplitCount   string `json:"splitCount"`
+	// gas object to be used in this transaction, node will pick one from the signer's possession if not provided
+	Gas string `json:"gas"`
+	// the gas budget, the transaction will fail if the gas cost exceed the budget
+	GasBudget string `json:"gasBudget"`
+}
