@@ -82,3 +82,14 @@ type MgoDevInspectTransactionBlockRequest struct {
 	// The epoch to perform the call. Will be set from the system state object if not provided
 	Epoch string `json:"epoch"`
 }
+
+type MergeCoinsRequest struct {
+	// the transaction signer's Mgo address
+	Signer      string `json:"signer"`
+	PrimaryCoin string `json:"primaryCoin"`
+	CoinToMerge string `json:"coinToMerge"`
+	// gas object to be used in this transaction, node will pick one from the signer's possession if not provided
+	Gas string `json:"gas"`
+	// the gas budget, the transaction will fail if the gas cost exceed the budget
+	GasBudget string `json:"gasBudget"`
+}

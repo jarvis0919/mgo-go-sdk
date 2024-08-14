@@ -93,3 +93,29 @@ func (s *Client) SignAndExecuteTransactionBlock(ctx context.Context, req request
 
 	return rsp, nil
 }
+
+// MergeCoins implements the method `unsafe_mergeCoins`, creates an unsigned transaction to merge multiple coins into one coin.
+func (s *Client) MergeCoins(ctx context.Context, req request.MergeCoinsRequest) (model.TxnMetaData, error) {
+	var rsp model.TxnMetaData
+	respBytes, err := s.conn.Request(ctx, httpconn.Operation{
+		Method: "unsafe_mergeCoins",
+		Params: []interface{}{
+			req.Signer,
+			req.PrimaryCoin,
+			req.CoinToMerge,
+			req.Gas,
+			req.GasBudget,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
