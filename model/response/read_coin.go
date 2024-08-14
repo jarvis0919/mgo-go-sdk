@@ -38,3 +38,7 @@ type CoinMetadataResponse struct {
 	Description string `json:"description"`
 	IconUrl     string `json:"iconUrl"`
 }
+
+type TotalSupplyResponse struct {
+	Value string `json:"value"`
+}
