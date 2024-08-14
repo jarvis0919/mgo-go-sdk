@@ -10,15 +10,13 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func (c *Client) MgoDevInspectTransactionBlock(ctx context.Context, req request.MgoDevInspectTransactionBlockRequest) (response.MgoTransactionBlockResponse, error) {
-	var rsp response.MgoTransactionBlockResponse
+// MgoXGetAllBalance implements the method `suix_getAllBalances`, gets all Coin balances owned by an address.
+func (c *Client) MgoXGetAllBalance(ctx context.Context, req request.MgoXGetAllBalanceRequest) (response.CoinAllBalanceResponse, error) {
+	var rsp response.CoinAllBalanceResponse
 	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
-		Method: "mgo_devInspectTransactionBlock",
+		Method: "mgox_getAllBalances",
 		Params: []interface{}{
-			req.Sender,
-			req.TxBytes,
-			req.GasPrice,
-			req.Epoch,
+			req.Owner,
 		},
 	})
 	if err != nil {
@@ -27,7 +25,7 @@ func (c *Client) MgoDevInspectTransactionBlock(ctx context.Context, req request.
 	if gjson.ParseBytes(respBytes).Get("error").Exists() {
 		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
 	}
-	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").Raw), &rsp)
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
 	if err != nil {
 		return rsp, err
 	}

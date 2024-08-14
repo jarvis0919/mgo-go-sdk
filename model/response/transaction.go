@@ -1,4 +1,4 @@
-package respone
+package response
 
 import "github.com/jarvis0919/mgo-go-sdk/model"
 

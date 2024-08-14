@@ -10,7 +10,7 @@ import (
 	"github.com/jarvis0919/mgo-go-sdk/client/httpconn"
 	"github.com/jarvis0919/mgo-go-sdk/model"
 	"github.com/jarvis0919/mgo-go-sdk/model/request"
-	"github.com/jarvis0919/mgo-go-sdk/model/respone"
+	"github.com/jarvis0919/mgo-go-sdk/model/response"
 
 	"github.com/tidwall/gjson"
 )
@@ -65,8 +65,8 @@ func (c *Client) TransferObject(ctx context.Context, req request.TransferObjectR
 	return rsp, nil
 }
 
-func (s *Client) SignAndExecuteTransactionBlock(ctx context.Context, req request.SignAndExecuteTransactionBlockRequest) (respone.MgoTransactionBlockResponse, error) {
-	var rsp respone.MgoTransactionBlockResponse
+func (s *Client) SignAndExecuteTransactionBlock(ctx context.Context, req request.SignAndExecuteTransactionBlockRequest) (response.MgoTransactionBlockResponse, error) {
+	var rsp response.MgoTransactionBlockResponse
 	signedTxn := keypair.SignSerializedSigWith(&req.TxnMetaData, ed25519.NewKeyFromSeed(req.Signer.PrivateKeyBytes()), s.net)
 	respBytes, err := s.conn.Request(ctx, httpconn.Operation{
 		Method: "mgo_executeTransactionBlock",
