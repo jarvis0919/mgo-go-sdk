@@ -32,3 +32,35 @@ type MgoGetTransactionBlockRequest struct {
 	Digest  string                     `json:"digest"`
 	Options MgoTransactionBlockOptions `json:"options"`
 }
+
+type MgoMultiGetObjectsRequest struct {
+	ObjectIds []string             `json:"objectIds"`
+	Options   MgoObjectDataOptions `json:"options"`
+}
+
+type MgoMultiGetTransactionBlocksRequest struct {
+	Digests []string                   `json:"digests"`
+	Options MgoTransactionBlockOptions `json:"options"`
+}
+
+type MgoTryGetPastObjectRequest struct {
+	// the ID of the queried object
+	ObjectId string `json:"objectId"`
+	// the version of the queried object
+	Version uint64               `json:"version"`
+	Options MgoObjectDataOptions `json:"options"`
+}
+
+type PastObject struct {
+	// the ID of the queried object
+	ObjectId string `json:"objectId"`
+	// the version of the queried object
+	Version string `json:"version"`
+}
+
+type MgoTryMultiGetPastObjectsRequest struct {
+	// a vector of object and versions to be queried
+	MultiGetPastObjects []*PastObject
+	// options for specifying the content to be returned
+	Options MgoObjectDataOptions
+}

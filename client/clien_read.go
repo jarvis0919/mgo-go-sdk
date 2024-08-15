@@ -203,3 +203,100 @@ func (c *Client) MgoGetTransactionBlock(ctx context.Context, req request.MgoGetT
 	}
 	return rsp, nil
 }
+
+// MgoMultiGetObjects implements the method `mgo_multiGetObjects`, gets the object data for a list of objects.
+func (c *Client) MgoMultiGetObjects(ctx context.Context, req request.MgoMultiGetObjectsRequest) ([]*response.MgoObjectResponse, error) {
+	var rsp []*response.MgoObjectResponse
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "mgo_multiGetObjects",
+		Params: []interface{}{
+			req.ObjectIds,
+			req.Options,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
+
+// MgoMultiGetTransactionBlocks implements the method `mgo_multiGetTransactionBlocks`, gets an ordered list of transaction responses.
+func (c *Client) MgoMultiGetTransactionBlocks(ctx context.Context, req request.MgoMultiGetTransactionBlocksRequest) (response.MgoMultiGetTransactionBlocksResponse, error) {
+	var rsp response.MgoMultiGetTransactionBlocksResponse
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "mgo_multiGetTransactionBlocks",
+		Params: []interface{}{
+			req.Digests,
+			req.Options,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").Raw), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
+
+// MgoTryGetPastObject implements the method `mgo_tryGetPastObject`, gets the object information for a specified version.
+// There is no guarantee that objects with past versions can be retrieved by this API. The result may vary across nodes depending on their pruning policies.
+func (c *Client) MgoTryGetPastObject(ctx context.Context, req request.MgoTryGetPastObjectRequest) (response.PastObjectResponse, error) {
+	var rsp response.PastObjectResponse
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "mgo_tryGetPastObject",
+		Params: []interface{}{
+			req.ObjectId,
+			req.Version,
+			req.Options,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
+
+// MgoTryMultiGetPastObjects implements the method `mgo_tryMultiGetPastObjects`,
+// note there is no software-level guarantee/SLA that objects with past versions can be retrieved by this API,
+// even if the object and version exists/existed. The result may vary across nodes depending on their pruning policies.
+// Return the object information for a specified version.
+func (c *Client) MgoTryMultiGetPastObjects(ctx context.Context, req request.MgoTryMultiGetPastObjectsRequest) ([]*response.PastObjectResponse, error) {
+	var rsp []*response.PastObjectResponse
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "mgo_tryMultiGetPastObjects",
+		Params: []interface{}{
+			req.MultiGetPastObjects,
+			req.Options,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}

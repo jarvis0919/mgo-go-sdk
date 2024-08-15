@@ -42,3 +42,10 @@ type ProtocolConfigResponse struct {
 	FeatureFlags                map[string]bool              `json:"featureFlags"`
 	Attributes                  map[string]map[string]string `json:"attributes"`
 }
+
+type MgoMultiGetTransactionBlocksResponse []*MgoTransactionBlockResponse
+
+type PastObjectResponse struct {
+	Status  string      `json:"status"`
+	Details interface{} `json:"details"`
+}

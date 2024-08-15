@@ -97,3 +97,72 @@ func TestGetTransactionBlock(t *testing.T) {
 	}
 	utils.JsonPrint(block)
 }
+
+func TestMultiGetObjects(t *testing.T) {
+	obs, err := devCli.MgoMultiGetObjects(ctx, request.MgoMultiGetObjectsRequest{
+		ObjectIds: []string{"0x11ac113ffd2befec14988aa242635b3a59e2675bf11d95c07d055513bcbf6484", "0x229b6eb9bf8c0cf365da2d05dbbf8b1cea40168f8fc18c6f4356de9bc21da253"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	utils.JsonPrint(obs)
+}
+
+func TestMutiGetTransactionBlocks(t *testing.T) {
+	block, err := devCli.MgoMultiGetTransactionBlocks(ctx, request.MgoMultiGetTransactionBlocksRequest{
+		Digests: []string{"Ed7ZdSUJUbKZDnSQ1uGuEhZ85sR9Mh9xoAK89CyLh8CB", "CFTxHp2M7JumzzpUPkXfXthsFSxLmWvYZjGPMQ4fUUEU"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	utils.JsonPrint(block)
+}
+
+func TestTryGetPastObject(t *testing.T) {
+	object, err := devCli.MgoTryGetPastObject(ctx, request.MgoTryGetPastObjectRequest{
+		ObjectId: "0x229b6eb9bf8c0cf365da2d05dbbf8b1cea40168f8fc18c6f4356de9bc21da253",
+		Options: request.MgoObjectDataOptions{
+			ShowType:                true,
+			ShowOwner:               true,
+			ShowPreviousTransaction: true,
+			ShowDisplay:             false,
+			ShowContent:             true,
+			ShowBcs:                 false,
+			ShowStorageRebate:       true,
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	utils.JsonPrint(object)
+}
+
+func TestTryMultiGetPastObjects(t *testing.T) {
+	pastObject1 := request.PastObject{
+		ObjectId: "0x11ac113ffd2befec14988aa242635b3a59e2675bf11d95c07d055513bcbf6484",
+		Version:  "10251041",
+	}
+	pastObject2 := request.PastObject{
+		ObjectId: "0x229b6eb9bf8c0cf365da2d05dbbf8b1cea40168f8fc18c6f4356de9bc21da253",
+		Version:  "106811",
+	}
+	object, err := devCli.MgoTryMultiGetPastObjects(ctx, request.MgoTryMultiGetPastObjectsRequest{
+		MultiGetPastObjects: []*request.PastObject{
+			&pastObject1,
+			&pastObject2,
+		},
+		Options: request.MgoObjectDataOptions{
+			ShowType:                true,
+			ShowOwner:               true,
+			ShowPreviousTransaction: true,
+			ShowDisplay:             false,
+			ShowContent:             true,
+			ShowBcs:                 false,
+			ShowStorageRebate:       true,
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	utils.JsonPrint(object)
+}
