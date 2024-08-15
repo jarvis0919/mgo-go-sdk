@@ -1,0 +1,13 @@
+package response
+
+import "github.com/jarvis0919/mgo-go-sdk/model/mgo_json_rpc_types"
+
+type GetMoveFunctionArgTypesResponse []interface{}
+
+type GetNormalizedMoveModulesByPackageResponse map[string]mgo_json_rpc_types.MgoMoveNormalizedModule
+
+type GetNormalizedMoveModuleResponse mgo_json_rpc_types.MgoMoveNormalizedModule
+
+type GetNormalizedMoveStructResponse mgo_json_rpc_types.MgoMoveNormalizedStruct
+
+type GetNormalizedMoveFunctionResponse mgo_json_rpc_types.MgoMoveNormalizedFunction
