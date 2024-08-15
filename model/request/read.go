@@ -23,3 +23,12 @@ type MgoGetObjectRequest struct {
 	// config which fields to include in the response, by default only digest is included
 	Options MgoObjectDataOptions `json:"options"`
 }
+
+type MgoGetProtocolConfigRequest struct {
+	Version string `json:"version"`
+}
+
+type MgoGetTransactionBlockRequest struct {
+	Digest  string                     `json:"digest"`
+	Options MgoTransactionBlockOptions `json:"options"`
+}

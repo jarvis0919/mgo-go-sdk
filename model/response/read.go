@@ -34,3 +34,11 @@ type MgoLoadedChildObject struct {
 type ChildObjectsResponse struct {
 	LoadedChildObjects []*MgoLoadedChildObject `json:"loadedChildObjects"`
 }
+
+type ProtocolConfigResponse struct {
+	MinSupportedProtocolVersion string                       `json:"minSupportedProtocolVersion"`
+	MaxSupportedProtocolVersion string                       `json:"maxSupportedProtocolVersion"`
+	ProtocolVersion             string                       `json:"protocolVersion"`
+	FeatureFlags                map[string]bool              `json:"featureFlags"`
+	Attributes                  map[string]map[string]string `json:"attributes"`
+}

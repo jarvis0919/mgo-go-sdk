@@ -69,3 +69,31 @@ func TestGetObject(t *testing.T) {
 	}
 	utils.JsonPrint(ob)
 }
+
+func TestGetProtocolConfig(t *testing.T) {
+	config, err := devCli.MgoGetProtocolConfig(ctx, request.MgoGetProtocolConfigRequest{
+		Version: "1",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	utils.JsonPrint(config)
+}
+
+func TestGetTotalTransactionBlocks(t *testing.T) {
+	blocks, err := devCli.MgoGetTotalTransactionBlocks(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	utils.JsonPrint(blocks)
+}
+
+func TestGetTransactionBlock(t *testing.T) {
+	block, err := devCli.MgoGetTransactionBlock(ctx, request.MgoGetTransactionBlockRequest{
+		Digest: "Ed7ZdSUJUbKZDnSQ1uGuEhZ85sR9Mh9xoAK89CyLh8CB",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	utils.JsonPrint(block)
+}
