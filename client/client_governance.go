@@ -32,6 +32,26 @@ func (c *Client) MgoXGetCommitteeInfo(ctx context.Context, req request.MgoXGetCo
 	return rsp, nil
 }
 
+// MgoXGetLatestMgoSystemState implements the method `mgox_getLatestMgoSystemState`, get the latest MGO system state object on-chain.
+func (c *Client) MgoXGetLatestMgoSystemState(ctx context.Context) (response.MgoSystemStateSummary, error) {
+	var rsp response.MgoSystemStateSummary
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "mgox_getLatestMgoSystemState",
+		Params: []interface{}{},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
+
 // MgoXGetReferenceGasPrice implements the method `mgox_getReferenceGasPrice`, gets the reference gas price for the network.
 func (c *Client) MgoXGetReferenceGasPrice(ctx context.Context) (uint64, error) {
 	var rsp uint64

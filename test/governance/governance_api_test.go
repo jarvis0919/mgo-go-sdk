@@ -67,3 +67,11 @@ func TestGetCommitteeInfo(t *testing.T) {
 	}
 	utils.JsonPrint(info)
 }
+
+func TestGetLatestMgoSystemState(t *testing.T) {
+	state, err := devCli.MgoXGetLatestMgoSystemState(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	utils.JsonPrint(state)
+}
