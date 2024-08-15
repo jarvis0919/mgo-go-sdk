@@ -75,3 +75,11 @@ func TestGetLatestMgoSystemState(t *testing.T) {
 	}
 	utils.JsonPrint(state)
 }
+
+func TestGetValidatorsApy(t *testing.T) {
+	apy, err := devCli.MgoXGetValidatorsApy(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	utils.JsonPrint(apy)
+}

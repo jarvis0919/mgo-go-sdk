@@ -115,3 +115,23 @@ func (c *Client) MgoXGetStakesByIds(ctx context.Context, req request.MgoXGetStak
 	}
 	return rsp, nil
 }
+
+// MgoXGetValidatorsApy implements the method `mgox_getValidatorsApy`, return the validator APY.
+func (c *Client) MgoXGetValidatorsApy(ctx context.Context) (response.ValidatorsApy, error) {
+	var rsp response.ValidatorsApy
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "mgox_getValidatorsApy",
+		Params: []interface{}{},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
