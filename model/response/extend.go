@@ -42,3 +42,9 @@ type PaginatedObjectsResponse struct {
 	NextCursor  string              `json:"nextCursor"`
 	HasNextPage bool                `json:"hasNextPage"`
 }
+
+type MgoXQueryTransactionBlocksResponse struct {
+	Data        []MgoTransactionBlockResponse `json:"data"`
+	NextCursor  string                        `json:"nextCursor"`
+	HasNextPage bool                          `json:"hasNextPage"`
+}

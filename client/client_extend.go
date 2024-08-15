@@ -88,6 +88,34 @@ func (c *Client) MgoXGetOwnedObjects(ctx context.Context, req request.MgoXGetOwn
 	return rsp, nil
 }
 
+// MgoXQueryTransactionBlocks implements the method `mgox_queryTransactionBlocks`, gets list of transactions for a specified query criteria.
+func (c *Client) MgoXQueryTransactionBlocks(ctx context.Context, req request.MgoXQueryTransactionBlocksRequest) (response.MgoXQueryTransactionBlocksResponse, error) {
+	var rsp response.MgoXQueryTransactionBlocksResponse
+	if err := validate.ValidateStruct(req); err != nil {
+		return rsp, err
+	}
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "mgox_queryTransactionBlocks",
+		Params: []interface{}{
+			req.MgoTransactionBlockResponseQuery,
+			req.Cursor,
+			req.Limit,
+			req.DescendingOrder,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").Raw), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
+
 // MgoXResolveNameServiceAddress implements the method `mgox_resolveNameServiceAddress`, get the resolved address given resolver and name.
 func (c *Client) MgoXResolveNameServiceAddress(ctx context.Context, req request.MgoXResolveNameServiceAddressRequest) (string, error) {
 	respBytes, err := c.conn.Request(ctx, httpconn.Operation{

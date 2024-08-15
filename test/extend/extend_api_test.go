@@ -74,3 +74,21 @@ func TestOwnedObjects(t *testing.T) {
 	}
 	utils.JsonPrint(object)
 }
+
+func TestQueryTransactionBlocks(t *testing.T) {
+	transactionBlocks, err := devCli.MgoXQueryTransactionBlocks(ctx, request.MgoXQueryTransactionBlocksRequest{
+		//MgoTransactionBlockResponseQuery: request.MgoTransactionBlockResponseQuery{
+		//	TransactionFilter: request.TransactionFilter{
+		//		"InputObject": "0x93633829fcba6d6e0ccb13d3dbfe7614b81ea76b255e5d435032cd8595f37eb8",
+		//	},
+		//},
+		Cursor:          "5uKUUtqgd7aocMBrPUqu4yXjHhKooVHeNqQ1HyM8e6BC",
+		Limit:           10,
+		DescendingOrder: false,
+	})
+	if err != nil {
+		fmt.Printf("%v", err)
+		return
+	}
+	utils.JsonPrint(transactionBlocks)
+}

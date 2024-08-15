@@ -57,3 +57,29 @@ type MgoXGetOwnedObjectsRequest struct {
 	// maximum number of items per page
 	Limit uint64 `json:"limit" validate:"lte=50"`
 }
+
+type TransactionFilter map[string]interface{}
+
+type MgoTransactionBlockOptions struct {
+	ShowInput          bool `json:"showInput,omitempty"`
+	ShowRawInput       bool `json:"showRawInput,omitempty"`
+	ShowEffects        bool `json:"showEffects,omitempty"`
+	ShowEvents         bool `json:"showEvents,omitempty"`
+	ShowObjectChanges  bool `json:"showObjectChanges,omitempty"`
+	ShowBalanceChanges bool `json:"showBalanceChanges,omitempty"`
+}
+
+type MgoTransactionBlockResponseQuery struct {
+	TransactionFilter TransactionFilter          `json:"filter"`
+	Options           MgoTransactionBlockOptions `json:"options"`
+}
+
+type MgoXQueryTransactionBlocksRequest struct {
+	MgoTransactionBlockResponseQuery MgoTransactionBlockResponseQuery
+	// optional paging cursor
+	Cursor interface{} `json:"cursor"`
+	// maximum number of items per page
+	Limit uint64 `json:"limit" validate:"lte=50"`
+	// query result ordering, default to false (ascending order), oldest record first
+	DescendingOrder bool `json:"descendingOrder"`
+}
