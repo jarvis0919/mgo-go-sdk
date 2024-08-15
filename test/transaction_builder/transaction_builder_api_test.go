@@ -137,3 +137,38 @@ func TestPayAllMgo(t *testing.T) {
 	fmt.Println(executeRes)
 
 }
+
+func TestPayMgo(t *testing.T) {
+	pay, err := devCli.PayMgo(ctx, request.PayMgoRequest{
+		Signer:      "0x6d5ae691047b8e55cb3fc84da59651c5bae57d2970087038c196ed501e00697b",
+		MgoObjectId: []string{"0xc7ead1d1ffd8957deaca7de892d26ef3c7f842db9a32ca5a937eee48bfd9a150", "0xafa150aa24319f7ba0b543b4923497b94aeac15c372883d5219f2f1ba0c1869a"},
+		Recipient:   []string{"0xbb3888e6c078a8ccedde58394873584ba39878984f1f8da4cba870de7eb5c3d2", "0x0cafa361487490f306c0b4c3e4cf0dc6fd584c5259ab1d5457d80a9e2170e238"},
+		Amount:      []string{"1000", "1000"},
+		GasBudget:   "10000000",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	ed25519Signer, err := getSigner()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	executeRes, err := devCli.SignAndExecuteTransactionBlock(ctx, request.SignAndExecuteTransactionBlockRequest{
+		TxnMetaData: pay,
+		Signer:      ed25519Signer,
+		// only fetch the effects field
+		Options: request.TransactionBlockOptions{
+			ShowInput:    true,
+			ShowRawInput: true,
+			ShowEffects:  true,
+		},
+		RequestType: "WaitForLocalExecution",
+	})
+	if err != nil {
+		fmt.Printf("%v", err)
+		return
+	}
+	fmt.Println(executeRes)
+
+}

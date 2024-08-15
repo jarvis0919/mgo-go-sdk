@@ -66,10 +66,10 @@ func (c *Client) Pay(ctx context.Context, req request.PayRequest) (model.TxnMeta
 	return rsp, nil
 }
 
-// PayAllMgo implements the method `unsafe_payAllMgo`, send all SUI coins to one recipient.
-// This is for SUI coin only and does not require a separate gas coin object.
+// PayAllMgo implements the method `unsafe_payAllMgo`, send all MGO coins to one recipient.
+// This is for MGO coin only and does not require a separate gas coin object.
 // Specifically, what pay_all_mgo does are:
-// 1. accumulate all SUI from input coins and deposit all SUI to the first input coin.
+// 1. accumulate all MGO from input coins and deposit all MGO to the first input coin.
 // 2. transfer the updated first coin to the recipient and also use this first coin as gas coin object.
 // 3. the balance of the first input coin after tx is sum(input_coins) - actual_gas_cost.
 // 4. all other input coins other than the first are deleted.
@@ -81,6 +81,38 @@ func (c *Client) PayAllMgo(ctx context.Context, req request.PayAllMgoRequest) (m
 			req.Signer,
 			req.MgoObjectId,
 			req.Recipient,
+			req.GasBudget,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
+
+// PayMgo implements the method `unsafe_payMgo`, send MGO coins to a list of addresses, following a list of amounts.
+// This is for MGO coin only and does not require a separate gas coin object.
+// Specifically, what pay_mgo does are:
+// 1. debit each input_coin to create new coin following the order of amounts and assign it to the corresponding recipient.
+// 2. accumulate all residual MGO from input coins left and deposit all MGO to the first input coin, then use the first input coin as the gas coin object.
+// 3. the balance of the first input coin after tx is sum(input_coins) - sum(amounts) - actual_gas_cost
+// 4. all other input coints other than the first one are deleted.
+func (c *Client) PayMgo(ctx context.Context, req request.PayMgoRequest) (model.TxnMetaData, error) {
+	var rsp model.TxnMetaData
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "unsafe_payMgo",
+		Params: []interface{}{
+			req.Signer,
+			req.MgoObjectId,
+			req.Recipient,
+			req.Amount,
 			req.GasBudget,
 		},
 	})
