@@ -10,6 +10,84 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+// MgoXGetDynamicFieldObject implements the method `mgox_getDynamicFieldObject`, gets the dynamic field object information for a specified object.
+func (c *Client) MgoXGetDynamicFieldObject(ctx context.Context, req request.MgoXGetDynamicFieldObjectRequest) (response.MgoObjectResponse, error) {
+	var rsp response.MgoObjectResponse
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "mgox_getDynamicFieldObject",
+		Params: []interface{}{
+			req.ObjectId,
+			req.DynamicFieldName,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
+
+// MgoXGetDynamicField implements the method `mgpx_getDynamicFields`, gets the list of dynamic field objects owned by an object.
+func (c *Client) MgoXGetDynamicFields(ctx context.Context, req request.MgoXGetDynamicFieldsRequest) (response.PaginatedDynamicFieldInfoResponse, error) {
+	var rsp response.PaginatedDynamicFieldInfoResponse
+	if err := validate.ValidateStruct(req); err != nil {
+		return rsp, err
+	}
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "mgox_getDynamicFields",
+		Params: []interface{}{
+			req.ObjectId,
+			req.Cursor,
+			req.Limit,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
+
+// MgoXGetOwnedObjects implements the method `mgox_getOwnedObjects`, gets the list of objects owned by an address.
+func (c *Client) MgoXGetOwnedObjects(ctx context.Context, req request.MgoXGetOwnedObjectsRequest) (response.PaginatedObjectsResponse, error) {
+	var rsp response.PaginatedObjectsResponse
+	if err := validate.ValidateStruct(req); err != nil {
+		return rsp, err
+	}
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "mgox_getOwnedObjects",
+		Params: []interface{}{
+			req.Address,
+			req.Query,
+			req.Cursor,
+			req.Limit,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
+
 // MgoXResolveNameServiceAddress implements the method `mgox_resolveNameServiceAddress`, get the resolved address given resolver and name.
 func (c *Client) MgoXResolveNameServiceAddress(ctx context.Context, req request.MgoXResolveNameServiceAddressRequest) (string, error) {
 	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
