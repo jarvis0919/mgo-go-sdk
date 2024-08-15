@@ -12,3 +12,14 @@ type MgoGetCheckpointsRequest struct {
 	// query result ordering, default to false (ascending order), oldest record first
 	DescendingOrder bool `json:"descendingOrder"`
 }
+
+type MgoGetLoadedChildObjectsRequest struct {
+	Digest string `json:"digest"`
+}
+
+type MgoGetObjectRequest struct {
+	// the ID of the queried object
+	ObjectId string `json:"ObjectId"`
+	// config which fields to include in the response, by default only digest is included
+	Options MgoObjectDataOptions `json:"options"`
+}

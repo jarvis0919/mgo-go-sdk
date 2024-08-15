@@ -41,3 +41,31 @@ func TestGetCheckPoints(t *testing.T) {
 	}
 	utils.JsonPrint(checkpoints)
 }
+
+func TestGetLatestCheckpointSequenceNumber(t *testing.T) {
+	number, err := devCli.MgoGetLatestCheckpointSequenceNumber(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	utils.JsonPrint(number)
+}
+
+func TestGetLoadedChildObjects(t *testing.T) {
+	ob, err := devCli.MgoGetLoadedChildObjects(ctx, request.MgoGetLoadedChildObjectsRequest{
+		Digest: "GxRMedP6tgLbwMY3fpUDgXMaRqZgw9ELhghFNVZSXLaU",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	utils.JsonPrint(ob)
+}
+
+func TestGetObject(t *testing.T) {
+	ob, err := devCli.MgoGetObject(ctx, request.MgoGetObjectRequest{
+		ObjectId: "0x11ac113ffd2befec14988aa242635b3a59e2675bf11d95c07d055513bcbf6484",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	utils.JsonPrint(ob)
+}

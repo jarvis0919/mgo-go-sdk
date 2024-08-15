@@ -76,3 +76,67 @@ func (c *Client) MgoGetCheckpoints(ctx context.Context, req request.MgoGetCheckp
 	}
 	return rsp, nil
 }
+
+// MgoGetLatestCheckpointSequenceNumber implements the method `mgo_getLatestCheckpointSequenceNumber`, gets the sequence number of the latest checkpoint that has been executed.
+func (c *Client) MgoGetLatestCheckpointSequenceNumber(ctx context.Context) (uint64, error) {
+	var rsp uint64
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "mgo_getLatestCheckpointSequenceNumber",
+		Params: []interface{}{},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
+
+// MgoGetLoadedChildObjects implements the method `mgo_getLoadedChildObjects`, return the object information for a specified digest.
+func (c *Client) MgoGetLoadedChildObjects(ctx context.Context, req request.MgoGetLoadedChildObjectsRequest) (response.ChildObjectsResponse, error) {
+	var rsp response.ChildObjectsResponse
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "mgo_getLoadedChildObjects",
+		Params: []interface{}{
+			req.Digest,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
+
+// MgoGetObject implements the method `mgo_getObject`, gets the object information for a specified object.
+func (c *Client) MgoGetObject(ctx context.Context, req request.MgoGetObjectRequest) (response.MgoObjectResponse, error) {
+	var rsp response.MgoObjectResponse
+
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "mgo_getObject",
+		Params: []interface{}{
+			req.ObjectId,
+			req.Options,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}

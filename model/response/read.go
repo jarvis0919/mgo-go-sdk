@@ -25,3 +25,12 @@ type PaginatedCheckpointsResponse struct {
 	NextCursor  string               `json:"nextCursor"`
 	HasNextPage bool                 `json:"hasNextPage"`
 }
+
+type MgoLoadedChildObject struct {
+	ObjectID       string `json:"objectId"`
+	SequenceNumber string `json:"sequenceNumber"`
+}
+
+type ChildObjectsResponse struct {
+	LoadedChildObjects []*MgoLoadedChildObject `json:"loadedChildObjects"`
+}
