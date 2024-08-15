@@ -103,3 +103,37 @@ func TestPay(t *testing.T) {
 	fmt.Println(executeRes)
 
 }
+
+func TestPayAllMgo(t *testing.T) {
+	pay, err := devCli.PayAllMgo(ctx, request.PayAllMgoRequest{
+		Signer:      "0x6d5ae691047b8e55cb3fc84da59651c5bae57d2970087038c196ed501e00697b",
+		MgoObjectId: []string{"0xe586e913e413de2df45e3eca0f0adf342a1f5d8d71e61805e14fd4872529f727", "0xc7f7956990f4d210024f34d9c5692e0b42d01aa67c94532521e8be886a0dbaa7"},
+		Recipient:   "0x0cafa361487490f306c0b4c3e4cf0dc6fd584c5259ab1d5457d80a9e2170e238",
+		GasBudget:   "10000000",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	ed25519Signer, err := getSigner()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	executeRes, err := devCli.SignAndExecuteTransactionBlock(ctx, request.SignAndExecuteTransactionBlockRequest{
+		TxnMetaData: pay,
+		Signer:      ed25519Signer,
+		// only fetch the effects field
+		Options: request.TransactionBlockOptions{
+			ShowInput:    true,
+			ShowRawInput: true,
+			ShowEffects:  true,
+		},
+		RequestType: "WaitForLocalExecution",
+	})
+	if err != nil {
+		fmt.Printf("%v", err)
+		return
+	}
+	fmt.Println(executeRes)
+
+}

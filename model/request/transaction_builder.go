@@ -30,3 +30,12 @@ type PayRequest struct {
 	// the gas budget, the transaction will fail if the gas cost exceed the budget
 	GasBudget string `json:"gasBudget"`
 }
+
+type PayAllMgoRequest struct {
+	// the transaction signer's Mgo address
+	Signer      string   `json:"signer"`
+	MgoObjectId []string `json:"mgoObjectId"`
+	Recipient   string   `json:"recipient"`
+	// the gas budget, the transaction will fail if the gas cost exceed the budget
+	GasBudget string `json:"gasBudget"`
+}
