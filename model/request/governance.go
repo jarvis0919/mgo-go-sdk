@@ -6,3 +6,7 @@ type MgoXGetStakesRequest struct {
 type MgoXGetStakesByIdsRequest struct {
 	StakedMgoIds []string `json:"stakedMgoIds"`
 }
+
+type MgoXGetCommitteeInfoRequest struct {
+	Epoch string `json:"epoch"`
+}

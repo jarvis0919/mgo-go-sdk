@@ -14,3 +14,8 @@ type DelegatedStakesResponse struct {
 	StakingPool      string               `json:"stakingPool"`
 	Stakes           []DelegatedStakeInfo `json:"stakes"`
 }
+
+type MgoXGetCommitteeInfoResponse struct {
+	Epoch      string     `json:"epoch"`
+	Validators [][]string `json:"validators"`
+}

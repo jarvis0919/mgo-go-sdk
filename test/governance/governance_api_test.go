@@ -5,6 +5,7 @@ import (
 	"github.com/jarvis0919/mgo-go-sdk/client"
 	"github.com/jarvis0919/mgo-go-sdk/global"
 	"github.com/jarvis0919/mgo-go-sdk/model/request"
+	"github.com/jarvis0919/mgo-go-sdk/utils"
 	"testing"
 )
 
@@ -55,4 +56,14 @@ func TestGetStakesByIds(t *testing.T) {
 			t.Logf("stakeId:%v", stakes[0].Stakes[0].StakedMgoId)
 		}
 	}
+}
+
+func TestGetCommitteeInfo(t *testing.T) {
+	info, err := devCli.MgoXGetCommitteeInfo(ctx, request.MgoXGetCommitteeInfoRequest{
+		Epoch: "50",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	utils.JsonPrint(info)
 }
