@@ -192,7 +192,7 @@ func TestPublish(t *testing.T) {
 
 	executeRes, err := devCli.SignAndExecuteTransactionBlock(ctx, request.SignAndExecuteTransactionBlockRequest{
 		TxnMetaData: publish,
-		Signer:      ed25519Signer,
+		Keypair:     ed25519Signer,
 		// only fetch the effects field
 		Options: request.TransactionBlockOptions{
 			ShowInput:    true,
@@ -228,7 +228,7 @@ func TestRequestAddStake(t *testing.T) {
 
 	executeRes, err := devCli.SignAndExecuteTransactionBlock(ctx, request.SignAndExecuteTransactionBlockRequest{
 		TxnMetaData: publish,
-		Signer:      ed25519Signer,
+		Keypair:     ed25519Signer,
 		// only fetch the effects field
 		Options: request.TransactionBlockOptions{
 			ShowInput:    true,
@@ -262,7 +262,7 @@ func TestRequestWithdrawStake(t *testing.T) {
 
 	executeRes, err := devCli.SignAndExecuteTransactionBlock(ctx, request.SignAndExecuteTransactionBlockRequest{
 		TxnMetaData: publish,
-		Signer:      ed25519Signer,
+		Keypair:     ed25519Signer,
 		// only fetch the effects field
 		Options: request.TransactionBlockOptions{
 			ShowInput:    true,
