@@ -83,3 +83,7 @@ type MgoXQueryTransactionBlocksRequest struct {
 	// query result ordering, default to false (ascending order), oldest record first
 	DescendingOrder bool `json:"descendingOrder"`
 }
+
+type EventFilterByMoveEventType struct {
+	MoveEventType string `json:"MoveEventType"`
+}
