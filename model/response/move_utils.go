@@ -1,13 +1,24 @@
 package response
 
-import "github.com/jarvis0919/mgo-go-sdk/model/mgo_json_rpc_types"
+type MgoMoveNormalizedStruct struct {
+	Abilities      interface{}   `json:"abilities"`
+	TypeParameters []interface{} `json:"typeParameters"`
+	Fields         []interface{} `json:"fields"`
+}
+
+type MgoMoveNormalizedFunction struct {
+	Visibility interface{}   `json:"visibility"`
+	IsEntry    bool          `json:"isEntry"`
+	Parameters []interface{} `json:"parameters"`
+	Return_    []interface{} `json:"return_"`
+}
 
 type GetMoveFunctionArgTypesResponse []interface{}
 
-type GetNormalizedMoveModulesByPackageResponse map[string]mgo_json_rpc_types.MgoMoveNormalizedModule
+type GetNormalizedMoveModulesByPackageResponse map[string]MgoMoveNormalizedModule
 
-type GetNormalizedMoveModuleResponse mgo_json_rpc_types.MgoMoveNormalizedModule
+type GetNormalizedMoveModuleResponse MgoMoveNormalizedModule
 
-type GetNormalizedMoveStructResponse mgo_json_rpc_types.MgoMoveNormalizedStruct
+type GetNormalizedMoveStructResponse MgoMoveNormalizedStruct
 
-type GetNormalizedMoveFunctionResponse mgo_json_rpc_types.MgoMoveNormalizedFunction
+type GetNormalizedMoveFunctionResponse MgoMoveNormalizedFunction
