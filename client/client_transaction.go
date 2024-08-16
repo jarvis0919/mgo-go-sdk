@@ -2,11 +2,9 @@ package client
 
 import (
 	"context"
-	"crypto/ed25519"
 	"encoding/json"
 	"errors"
 
-	"github.com/jarvis0919/mgo-go-sdk/account/keypair"
 	"github.com/jarvis0919/mgo-go-sdk/client/httpconn"
 	"github.com/jarvis0919/mgo-go-sdk/model"
 	"github.com/jarvis0919/mgo-go-sdk/model/request"
@@ -67,7 +65,7 @@ func (c *Client) TransferObject(ctx context.Context, req request.TransferObjectR
 
 func (c *Client) SignAndExecuteTransactionBlock(ctx context.Context, req request.SignAndExecuteTransactionBlockRequest) (response.MgoTransactionBlockResponse, error) {
 	var rsp response.MgoTransactionBlockResponse
-	signedTxn := keypair.SignSerializedSigWith(&req.TxnMetaData, ed25519.NewKeyFromSeed(req.Signer.PrivateKeyBytes()), c.net)
+	signedTxn := req.Keypair.SignTransactionBlock(&req.TxnMetaData, c.net)
 	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
 		Method: "mgo_executeTransactionBlock",
 		Params: []interface{}{

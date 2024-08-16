@@ -9,32 +9,33 @@ var (
 )
 
 var (
-	SIGNATURE_FLAG_TO_SCHEME = map[Keytype]string{
+	SIGNATURE_FLAG_TO_SCHEME = map[Scheme]string{
 		0x00: "Ed25519",
 		0x01: "Secp256k1",
 		// Add other schemes if applicable
 	}
-	SIGNATURE_SCHEME_TO_FLAG = map[string]Keytype{
+	SIGNATURE_SCHEME_TO_FLAG = map[string]Scheme{
 		"Ed25519":   0x00,
 		"Secp256k1": 0x01,
 		// Add other schemes if applicable
 	}
-	DERIVATION_PATH_DEVNET = map[Keytype]string{
+	DERIVATION_PATH_DEVNET = map[Scheme]string{
 		0x00: `m/44'/784'/0'/0'/0'`,
 		0x01: `m/54'/784'/0'/0/0`,
 	}
-	DERIVATION_PATH_TESTNET = map[Keytype]string{
+	DERIVATION_PATH_TESTNET = map[Scheme]string{
 		0x00: `m/44'/938'/0'/0'/0'`,
 		0x01: `m/54'/938'/0'/0/0`,
 	}
 )
 
+type Scheme byte
 type Keytype byte
 
 const (
-	Ed25519Flag   Keytype = 0
-	Secp256k1Flag Keytype = 1
-	ErrorFlag     byte    = math.MaxUint8
+	Ed25519Flag   Scheme = 0
+	Secp256k1Flag Scheme = 1
+	ErrorFlag     byte   = math.MaxUint8
 )
 const (
 	TransactionData    Keytype = 0

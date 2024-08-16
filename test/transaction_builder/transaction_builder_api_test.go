@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/jarvis0919/mgo-go-sdk/account/signer"
+	"os"
+	"testing"
+
+	"github.com/jarvis0919/mgo-go-sdk/account/keypair"
 	"github.com/jarvis0919/mgo-go-sdk/client"
 	"github.com/jarvis0919/mgo-go-sdk/global"
 	"github.com/jarvis0919/mgo-go-sdk/model/request"
 	"github.com/jarvis0919/mgo-go-sdk/utils"
-	"os"
-	"testing"
 )
 
 var ctx = context.Background()
@@ -49,7 +50,7 @@ func TestBatchTransaction(t *testing.T) {
 	utils.JsonPrint(rsp)
 }
 
-func getSigner() (*signer.SignerEd25519, error) {
+func getSigner() (*keypair.Keypair, error) {
 	// 文件中的私钥字符串为  ['private_key1','private_key2']
 	bytes, err := os.ReadFile("../../private_keys.json")
 	if err != nil {
@@ -61,7 +62,7 @@ func getSigner() (*signer.SignerEd25519, error) {
 		return nil, err
 	}
 
-	key, err := signer.NewEd25519SignerFromPrivateKey("0xa9c6efc5ffc3372f29b108b5ac039f3cf8d411b953b9d212f48b22c3620a5a56")
+	key, err := keypair.New(keypair.Options{Scheme: global.Ed25519Flag, PrivateKey: "0xa9c6efc5ffc3372f29b108b5ac039f3cf8d411b953b9d212f48b22c3620a5a56"})
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +88,7 @@ func TestPay(t *testing.T) {
 
 	executeRes, err := devCli.SignAndExecuteTransactionBlock(ctx, request.SignAndExecuteTransactionBlockRequest{
 		TxnMetaData: pay,
-		Signer:      ed25519Signer,
+		Keypair:     ed25519Signer,
 		// only fetch the effects field
 		Options: request.TransactionBlockOptions{
 			ShowInput:    true,
@@ -121,7 +122,7 @@ func TestPayAllMgo(t *testing.T) {
 
 	executeRes, err := devCli.SignAndExecuteTransactionBlock(ctx, request.SignAndExecuteTransactionBlockRequest{
 		TxnMetaData: pay,
-		Signer:      ed25519Signer,
+		Keypair:     ed25519Signer,
 		// only fetch the effects field
 		Options: request.TransactionBlockOptions{
 			ShowInput:    true,
@@ -156,7 +157,7 @@ func TestPayMgo(t *testing.T) {
 
 	executeRes, err := devCli.SignAndExecuteTransactionBlock(ctx, request.SignAndExecuteTransactionBlockRequest{
 		TxnMetaData: pay,
-		Signer:      ed25519Signer,
+		Keypair:     ed25519Signer,
 		// only fetch the effects field
 		Options: request.TransactionBlockOptions{
 			ShowInput:    true,

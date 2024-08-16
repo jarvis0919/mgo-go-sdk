@@ -1,15 +1,16 @@
-package signer
+package ed25519
 
 import (
 	"errors"
 	"fmt"
 
+	"github.com/jarvis0919/mgo-go-sdk/account/signer"
 	"github.com/jarvis0919/mgo-go-sdk/global"
 
 	"github.com/tyler-smith/go-bip39"
 )
 
-func NewSignertWithMnemonicTestNet(mnemonic string, keytype global.Keytype) (Signer, error) {
+func NewSignertWithMnemonicTestNet(mnemonic string, keytype global.Scheme) (signer.Signer, error) {
 	seed, err := bip39.NewSeedWithErrorChecking(mnemonic, "")
 	if err != nil {
 		return nil, err
@@ -26,7 +27,7 @@ func NewSignertWithMnemonicTestNet(mnemonic string, keytype global.Keytype) (Sig
 	signer, err := newEd25519SignerFromSeed(key.Key)
 	return signer, err
 }
-func NewSignertWithMnemonicDevNet(mnemonic string, keytype global.Keytype) (Signer, error) {
+func NewSignertWithMnemonicDevNet(mnemonic string, keytype global.Scheme) (signer.Signer, error) {
 	seed, err := bip39.NewSeedWithErrorChecking(mnemonic, "")
 	fmt.Println(bip39.NewMnemonic(seed))
 	if err != nil {

@@ -22,7 +22,7 @@ func DecodeMgoPrivateKey(value string) (*model.ParsedKeypair, error) {
 		return nil, err
 	}
 	secretKey := extendedSecretKey[1:]
-	signatureScheme, exists := global.SIGNATURE_FLAG_TO_SCHEME[global.Keytype(extendedSecretKey[0])]
+	signatureScheme, exists := global.SIGNATURE_FLAG_TO_SCHEME[global.Scheme(extendedSecretKey[0])]
 	if !exists {
 		return nil, errors.New("invalid signature scheme flag")
 	}
@@ -32,7 +32,7 @@ func DecodeMgoPrivateKey(value string) (*model.ParsedKeypair, error) {
 		SecretKey: secretKey,
 	}, nil
 }
-func EncodeMgoPrivateKey(value []byte, scheme global.Keytype) (string, error) {
+func EncodeMgoPrivateKey(value []byte, scheme global.Scheme) (string, error) {
 	if len(value) != global.PRIVATE_KEY_SIZE {
 		return "", errors.New("invalid bytes length")
 	}

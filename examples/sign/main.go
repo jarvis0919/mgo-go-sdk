@@ -6,7 +6,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/jarvis0919/mgo-go-sdk/account/signer"
+	"github.com/jarvis0919/mgo-go-sdk/account/keypair"
+	"github.com/jarvis0919/mgo-go-sdk/global"
 	"github.com/jarvis0919/mgo-go-sdk/utils"
 
 	"github.com/ethereum/go-ethereum/crypto"
@@ -156,7 +157,7 @@ func Secp256k1Sign() {
 
 func Ed25519Sign() {
 
-	s, err := signer.NewEd25519Signer()
+	s, err := keypair.New(keypair.Options{global.Ed25519Flag, ""})
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -165,7 +166,7 @@ func Ed25519Sign() {
 		Time     string `json:"time"     yaml:"time"     form:"time"`
 		SignType string `json:"signType" yaml:"signType" form:"signType"`
 	}{
-		Address:  s.MgoAddressTestNet,
+		Address:  s.ToMgoAddressDevNet(),
 		Time:     time.Now().Format("2006-01-02"),
 		SignType: "Register",
 	})

@@ -6,7 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jarvis0919/mgo-go-sdk/account/signer"
+	"github.com/jarvis0919/mgo-go-sdk/account/keypair"
+	"github.com/jarvis0919/mgo-go-sdk/global"
 	"github.com/jarvis0919/mgo-go-sdk/utils"
 )
 
@@ -21,7 +22,7 @@ func main() {
 	// fmt.Println(l, err)
 	var builder strings.Builder
 	for i := 0; i < 10; i++ {
-		s, err := signer.NewEd25519Signer()
+		s, err := keypair.New(keypair.Options{Scheme: global.Ed25519Flag})
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -30,7 +31,7 @@ func main() {
 			Time     string `json:"time"     yaml:"time"     form:"time"`
 			SignType string `json:"signType" yaml:"signType" form:"signType"`
 		}{
-			Address:  s.MgoAddressTestNet,
+			Address:  s.ToMgoAddressDevNet(),
 			Time:     time.Now().Format("2006-01-02"),
 			SignType: "Register",
 		})
@@ -39,7 +40,7 @@ func main() {
 			Time     string `json:"time"     yaml:"time"     form:"time"`
 			SignType string `json:"signType" yaml:"signType" form:"signType"`
 		}{
-			Address:  s.MgoAddressTestNet,
+			Address:  s.ToMgoAddressTestNet(),
 			Time:     time.Now().Format("2006-01-02"),
 			SignType: "Login",
 		})
@@ -50,7 +51,7 @@ func main() {
 		data2 := utils.ByteArrayToBase64String(sign2)
 		// fmt.Println(data)
 
-		builder.WriteString(fmt.Sprintf("PrivateKey: %s\nAddress:    %s\nSignDataRegister:  %s\nSignDataLogin:  %s\n\n", s.PrivateKeyHex(), s.MgoAddressTestNet, data, data2))
+		builder.WriteString(fmt.Sprintf("PrivateKey: %s\nAddress:    %s\nSignDataRegister:  %s\nSignDataLogin:  %s\n\n", s.PrivateKeyHex(), s.ToMgoAddressTestNet(), data, data2))
 
 	}
 	utils.WriteFile("test.txt", builder.String())

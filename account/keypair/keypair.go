@@ -2,60 +2,115 @@ package keypair
 
 import (
 	"encoding/base64"
-	"encoding/hex"
+	"errors"
+	"regexp"
+	"strings"
 
+	"github.com/jarvis0919/mgo-go-sdk/account/signer"
+	"github.com/jarvis0919/mgo-go-sdk/account/signer/ed25519"
+	"github.com/jarvis0919/mgo-go-sdk/bcs"
 	"github.com/jarvis0919/mgo-go-sdk/global"
 	"github.com/jarvis0919/mgo-go-sdk/model"
 	"github.com/jarvis0919/mgo-go-sdk/utils"
 )
 
-func FetchKeyPair(value string) (model.MgoKeyPair, error) {
-	result, err := base64.StdEncoding.DecodeString(value)
-	if err != nil {
-		return model.MgoKeyPair{}, err
-	}
-	if len(result) == 0 {
-		return model.MgoKeyPair{}, err
-	}
-	switch result[0] {
-	case byte(global.Ed25519Flag):
-		pb := result[1 : global.Ed25519PublicKeyLength+1]
-		sk := result[1+global.Ed25519PublicKeyLength:]
-		pbInBase64 := utils.EncodeBase64(pb)
-		return model.MgoKeyPair{
-			Flag:            byte(global.Ed25519Flag),
-			PrivateKey:      sk,
-			PublicKeyBase64: pbInBase64,
-			PublicKey:       pb,
-			MgoAddress:      fromPublicKeyBytesToAddress(pb, byte(global.Ed25519Flag)),
-		}, nil
-	case byte(global.Secp256k1Flag):
-		pb := result[1 : global.Secp256k1PublicKeyLength+1]
-		sk := result[1+global.Secp256k1PublicKeyLength:]
-		pbInBase64 := utils.EncodeBase64(pb)
-		return model.MgoKeyPair{
-			Flag:            byte(global.Secp256k1Flag),
-			PrivateKey:      sk,
-			PublicKey:       pb,
-			PublicKeyBase64: pbInBase64,
-			MgoAddress:      fromPublicKeyBytesToAddress(pb, byte(global.Secp256k1Flag)),
-		}, nil
+type Options struct {
+	Scheme     global.Scheme
+	PrivateKey string
+}
+
+type Keypair struct {
+	signer.Signer
+	Scheme global.Scheme
+}
+
+func New(opt Options) (*Keypair, error) {
+	switch opt.Scheme {
+	case global.Secp256k1Flag:
+		return nil, errors.New("invalid signature scheme flag")
+	case global.Ed25519Flag:
+		if opt.PrivateKey == "" {
+			sig, err := ed25519.NewEd25519Signer()
+			if err != nil {
+				return nil, err
+			}
+			return &Keypair{Scheme: opt.Scheme, Signer: sig}, err
+		}
+		if regexp.MustCompile(`^(0x|0X)?[0-9a-fA-F]+$`).MatchString(opt.PrivateKey) {
+			privateKey := opt.PrivateKey
+			if strings.HasPrefix(privateKey, "0x") || strings.HasPrefix(privateKey, "0X") {
+				privateKey = privateKey[2:]
+			}
+			if len(privateKey) != 64 {
+				return nil, errors.New("invalid private key")
+			}
+			sig, err := ed25519.NewEd25519SignerFromPrivateKey(privateKey)
+			if err != nil {
+				return nil, err
+			}
+			return &Keypair{Scheme: opt.Scheme, Signer: sig}, err
+		}
+		sig, err := ed25519.NewEd25519SignerFromMgoPrivatekey(opt.PrivateKey)
+		if err != nil {
+			return nil, err
+		}
+		return &Keypair{Scheme: opt.Scheme, Signer: sig}, err
 	default:
-		return model.MgoKeyPair{}, global.ErrInvalidEncryptFlag
+		return nil, errors.New("invalid signature scheme flag")
 	}
 }
 
-func fromPublicKeyBytesToAddress(publicKey []byte, scheme byte) string {
-	if scheme != byte(global.Ed25519Flag) && scheme != byte(global.Secp256k1Flag) {
-		return ""
+type SignedTransactionSerializedSig struct {
+	TxBytes   string `json:"tx_bytes"  yaml:"txBytes"`
+	Signature string `json:"signature" yaml:"signature"`
+}
+
+func (k *Keypair) SignPersonalMessage(message []byte, net global.NetIdentity) []byte {
+	message = append(bcs.ULEBEncode(uint64(len(message))), message...)
+	data := k.dataWithIntent(message, global.PersonalMessage)
+	digest := k.digestData(data, net)
+	sigBytes := k.Sign(digest[:])
+	publicKey := k.PublicKeyBytes()
+
+	signData := append(sigBytes, publicKey...)
+	signData = append([]byte{byte(global.Ed25519Flag)}, signData...)
+	return signData
+}
+
+func (k *Keypair) SignTransactionBlock(txn *model.TxnMetaData, net global.NetIdentity) *SignedTransactionSerializedSig {
+	txBytes, _ := base64.StdEncoding.DecodeString(txn.TxBytes)
+	data := k.dataWithIntent(txBytes, global.TransactionData)
+	digest := k.digestData(data, net)
+
+	sigBytes := k.Sign(digest[:])
+
+	return &SignedTransactionSerializedSig{
+		TxBytes:   txn.TxBytes,
+		Signature: k.toSerializedSignature(sigBytes),
 	}
-	// 注释使用方法性能更高,但为了维护性，采用了append的方式处理
-	// tmp := make([]byte, len(publicKey)+1)
-	// tmp[0] = scheme
-	// for i := range publicKey {
-	// 	tmp[i+1] = publicKey[i]
-	// }
-	tmp := append([]byte{scheme}, publicKey...)
-	hexHash := utils.Blake2bv1(tmp)
-	return "0x" + hex.EncodeToString(hexHash[:])[:global.AccountAddress32Length*2]
+}
+
+func (k *Keypair) dataWithIntent(data []byte, intent global.Keytype) []byte {
+	header := []byte{byte(intent), 0, 0}
+	markData := make([]byte, len(header)+len(data))
+	copy(markData, header)
+	copy(markData[len(header):], data)
+	return markData
+}
+func (k *Keypair) digestData(data []byte, net global.NetIdentity) []byte {
+	if net == global.MgoTestnet {
+		return utils.Keccak256(data)
+	} else {
+		return utils.Blake2bv1(data)
+	}
+
+}
+func (k *Keypair) toSerializedSignature(signature []byte) string {
+	signatureLen := len(signature)
+	pubKeyLen := len(k.PublicKeyBytes())
+	serializedSignature := make([]byte, 1+signatureLen+pubKeyLen)
+	serializedSignature[0] = byte(k.Scheme)
+	copy(serializedSignature[1:], signature)
+	copy(serializedSignature[1+signatureLen:], k.PublicKeyBytes())
+	return base64.StdEncoding.EncodeToString(serializedSignature)
 }

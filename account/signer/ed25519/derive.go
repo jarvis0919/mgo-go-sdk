@@ -1,4 +1,4 @@
-package signer
+package ed25519
 
 import (
 	"bytes"
