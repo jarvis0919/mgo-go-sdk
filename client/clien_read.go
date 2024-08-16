@@ -78,6 +78,28 @@ func (c *Client) MgoGetCheckpoints(ctx context.Context, req request.MgoGetCheckp
 	return rsp, nil
 }
 
+// MgoGetEvents implements the method `mgo_getEvents`, gets transaction events.
+func (c *Client) MgoGetEvents(ctx context.Context, req request.MgoGetEventsRequest) (response.GetEventsResponse, error) {
+	var rsp response.GetEventsResponse
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "mgo_getEvents",
+		Params: []interface{}{
+			req.Digest,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
+
 // MgoGetLatestCheckpointSequenceNumber implements the method `mgo_getLatestCheckpointSequenceNumber`, gets the sequence number of the latest checkpoint that has been executed.
 func (c *Client) MgoGetLatestCheckpointSequenceNumber(ctx context.Context) (uint64, error) {
 	var rsp uint64

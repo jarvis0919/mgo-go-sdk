@@ -34,13 +34,15 @@ func (c *Client) MgoGetMoveFunctionArgTypes(ctx context.Context, req request.Get
 	return rsp, nil
 }
 
-// MgoGetNormalizedMoveModulesByPackage implements method `mgo_getNormalizedMoveModulesByPackage`, return the structured representations of all modules in the given package.
-func (c *Client) MgoGetNormalizedMoveModulesByPackage(ctx context.Context, req request.GetNormalizedMoveModulesByPackageRequest) (response.GetNormalizedMoveModulesByPackageResponse, error) {
-	var rsp response.GetNormalizedMoveModulesByPackageResponse
+// MgoGetNormalizedMoveFunction implements method `mgo_getNormalizedMoveFunction`, return a structured representation of a Move function.
+func (c *Client) MgoGetNormalizedMoveFunction(ctx context.Context, req request.GetNormalizedMoveFunctionRequest) (response.GetNormalizedMoveFunctionResponse, error) {
+	var rsp response.GetNormalizedMoveFunctionResponse
 	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
-		Method: "mgo_getNormalizedMoveModulesByPackage",
+		Method: "mgo_getNormalizedMoveFunction",
 		Params: []interface{}{
 			req.Package,
+			req.ModuleName,
+			req.FunctionName,
 		},
 	})
 	if err != nil {
@@ -79,15 +81,13 @@ func (c *Client) MgoGetNormalizedMoveModule(ctx context.Context, req request.Get
 	return rsp, nil
 }
 
-// MgoGetNormalizedMoveStruct implements method `mgo_getNormalizedMoveStruct`, return a structured representation of a Move struct.
-func (c *Client) MgoGetNormalizedMoveStruct(ctx context.Context, req request.GetNormalizedMoveStructRequest) (response.GetNormalizedMoveStructResponse, error) {
-	var rsp response.GetNormalizedMoveStructResponse
+// MgoGetNormalizedMoveModulesByPackage implements method `mgo_getNormalizedMoveModulesByPackage`, return the structured representations of all modules in the given package.
+func (c *Client) MgoGetNormalizedMoveModulesByPackage(ctx context.Context, req request.GetNormalizedMoveModulesByPackageRequest) (response.GetNormalizedMoveModulesByPackageResponse, error) {
+	var rsp response.GetNormalizedMoveModulesByPackageResponse
 	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
-		Method: "mgo_getNormalizedMoveStruct",
+		Method: "mgo_getNormalizedMoveModulesByPackage",
 		Params: []interface{}{
 			req.Package,
-			req.ModuleName,
-			req.StructName,
 		},
 	})
 	if err != nil {
@@ -103,15 +103,15 @@ func (c *Client) MgoGetNormalizedMoveStruct(ctx context.Context, req request.Get
 	return rsp, nil
 }
 
-// MgoGetNormalizedMoveFunction implements method `mgo_getNormalizedMoveFunction`, return a structured representation of a Move function.
-func (c *Client) MgoGetNormalizedMoveFunction(ctx context.Context, req request.GetNormalizedMoveFunctionRequest) (response.GetNormalizedMoveFunctionResponse, error) {
-	var rsp response.GetNormalizedMoveFunctionResponse
+// MgoGetNormalizedMoveStruct implements method `mgo_getNormalizedMoveStruct`, return a structured representation of a Move struct.
+func (c *Client) MgoGetNormalizedMoveStruct(ctx context.Context, req request.GetNormalizedMoveStructRequest) (response.GetNormalizedMoveStructResponse, error) {
+	var rsp response.GetNormalizedMoveStructResponse
 	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
-		Method: "mgo_getNormalizedMoveFunction",
+		Method: "mgo_getNormalizedMoveStruct",
 		Params: []interface{}{
 			req.Package,
 			req.ModuleName,
-			req.FunctionName,
+			req.StructName,
 		},
 	})
 	if err != nil {
