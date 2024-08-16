@@ -9,26 +9,26 @@ import (
 	"github.com/jarvis0919/mgo-go-sdk/account/signer"
 	"github.com/jarvis0919/mgo-go-sdk/account/signer/ed25519"
 	"github.com/jarvis0919/mgo-go-sdk/bcs"
-	"github.com/jarvis0919/mgo-go-sdk/global"
+	"github.com/jarvis0919/mgo-go-sdk/config"
 	"github.com/jarvis0919/mgo-go-sdk/model"
 	"github.com/jarvis0919/mgo-go-sdk/utils"
 )
 
 type Options struct {
-	Scheme     global.Scheme
+	Scheme     config.Scheme
 	PrivateKey string
 }
 
 type Keypair struct {
 	signer.Signer
-	Scheme global.Scheme
+	Scheme config.Scheme
 }
 
 func New(opt Options) (*Keypair, error) {
 	switch opt.Scheme {
-	case global.Secp256k1Flag:
+	case config.Secp256k1Flag:
 		return nil, errors.New("invalid signature scheme flag")
-	case global.Ed25519Flag:
+	case config.Ed25519Flag:
 		if opt.PrivateKey == "" {
 			sig, err := ed25519.NewEd25519Signer()
 			if err != nil {
@@ -65,21 +65,21 @@ type SignedTransactionSerializedSig struct {
 	Signature string `json:"signature" yaml:"signature"`
 }
 
-func (k *Keypair) SignPersonalMessage(message []byte, net global.NetIdentity) []byte {
+func (k *Keypair) SignPersonalMessage(message []byte, net config.NetIdentity) []byte {
 	message = append(bcs.ULEBEncode(uint64(len(message))), message...)
-	data := k.dataWithIntent(message, global.PersonalMessage)
+	data := k.dataWithIntent(message, config.PersonalMessage)
 	digest := k.digestData(data, net)
 	sigBytes := k.Sign(digest[:])
 	publicKey := k.PublicKeyBytes()
 
 	signData := append(sigBytes, publicKey...)
-	signData = append([]byte{byte(global.Ed25519Flag)}, signData...)
+	signData = append([]byte{byte(config.Ed25519Flag)}, signData...)
 	return signData
 }
 
-func (k *Keypair) SignTransactionBlock(txn *model.TxnMetaData, net global.NetIdentity) *SignedTransactionSerializedSig {
+func (k *Keypair) SignTransactionBlock(txn *model.TxnMetaData, net config.NetIdentity) *SignedTransactionSerializedSig {
 	txBytes, _ := base64.StdEncoding.DecodeString(txn.TxBytes)
-	data := k.dataWithIntent(txBytes, global.TransactionData)
+	data := k.dataWithIntent(txBytes, config.TransactionData)
 	digest := k.digestData(data, net)
 
 	sigBytes := k.Sign(digest[:])
@@ -90,15 +90,15 @@ func (k *Keypair) SignTransactionBlock(txn *model.TxnMetaData, net global.NetIde
 	}
 }
 
-func (k *Keypair) dataWithIntent(data []byte, intent global.Keytype) []byte {
+func (k *Keypair) dataWithIntent(data []byte, intent config.Keytype) []byte {
 	header := []byte{byte(intent), 0, 0}
 	markData := make([]byte, len(header)+len(data))
 	copy(markData, header)
 	copy(markData[len(header):], data)
 	return markData
 }
-func (k *Keypair) digestData(data []byte, net global.NetIdentity) []byte {
-	if net == global.MgoTestnet {
+func (k *Keypair) digestData(data []byte, net config.NetIdentity) []byte {
+	if net == config.MgoTestnet {
 		return utils.Keccak256(data)
 	} else {
 		return utils.Blake2bv1(data)

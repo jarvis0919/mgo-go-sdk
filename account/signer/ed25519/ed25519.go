@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/jarvis0919/mgo-go-sdk/account/signer"
-	"github.com/jarvis0919/mgo-go-sdk/global"
+	"github.com/jarvis0919/mgo-go-sdk/config"
 
 	"github.com/jarvis0919/mgo-go-sdk/utils"
 )
@@ -74,7 +74,7 @@ func (s SignerEd25519) String() string {
 }
 
 // func (s *SignerEd25519) MgoPrivateKey() string {
-// 	mgoPrivateKey, _ := signer.EncodeMgoPrivateKey(s.PrivateKey[:global.PRIVATE_KEY_SIZE], s.Scheme)
+// 	mgoPrivateKey, _ := signer.EncodeMgoPrivateKey(s.PrivateKey[:config.PRIVATE_KEY_SIZE], s.Scheme)
 // 	return mgoPrivateKey
 // }
 
@@ -113,12 +113,12 @@ func (s *SignerEd25519) ToMgoAddressTestNet() string {
 }
 
 func mgoAddressDevNet(publicKey []byte) string {
-	tmp := append([]byte{byte(global.Ed25519Flag)}, publicKey...)
+	tmp := append([]byte{byte(config.Ed25519Flag)}, publicKey...)
 	hexHash := utils.Blake2bv1(tmp)
-	return "0x" + hex.EncodeToString(hexHash)[:global.AccountAddress32Length*2]
+	return "0x" + hex.EncodeToString(hexHash)[:config.AccountAddress32Length*2]
 }
 
 func mgoAddressTestNet(publicKey []byte) string {
-	inputBytes := append([]byte{byte(global.Ed25519Flag)}, publicKey...)
-	return "0x" + hex.EncodeToString(utils.Keccak256(inputBytes))[:global.MGO_ADDRESS_LENGTH]
+	inputBytes := append([]byte{byte(config.Ed25519Flag)}, publicKey...)
+	return "0x" + hex.EncodeToString(utils.Keccak256(inputBytes))[:config.MGO_ADDRESS_LENGTH]
 }

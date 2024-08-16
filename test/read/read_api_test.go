@@ -2,15 +2,16 @@ package read
 
 import (
 	"context"
+	"testing"
+
 	"github.com/jarvis0919/mgo-go-sdk/client"
-	"github.com/jarvis0919/mgo-go-sdk/global"
+	"github.com/jarvis0919/mgo-go-sdk/config"
 	"github.com/jarvis0919/mgo-go-sdk/model/request"
 	"github.com/jarvis0919/mgo-go-sdk/utils"
-	"testing"
 )
 
 var ctx = context.Background()
-var devCli = client.NewMgoClient(global.MgoDevnet)
+var devCli = client.NewMgoClient(config.MgoDevnet)
 
 func TestGetChainIdentifier(t *testing.T) {
 	identifier, err := devCli.MgoGetChainIdentifier(ctx)

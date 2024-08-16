@@ -9,12 +9,12 @@ import (
 
 	"github.com/jarvis0919/mgo-go-sdk/account/keypair"
 	"github.com/jarvis0919/mgo-go-sdk/client"
-	"github.com/jarvis0919/mgo-go-sdk/global"
+	"github.com/jarvis0919/mgo-go-sdk/config"
 	"github.com/jarvis0919/mgo-go-sdk/model/request"
 )
 
 var ctx = context.Background()
-var devCli = client.NewMgoClient(global.MgoDevnet)
+var devCli = client.NewMgoClient(config.MgoDevnet)
 
 func getSigner() (*keypair.Keypair, error) {
 	// 文件中的私钥字符串为  ['private_key1','private_key2']
@@ -28,7 +28,7 @@ func getSigner() (*keypair.Keypair, error) {
 		return nil, err
 	}
 
-	key, err := keypair.New(keypair.Options{Scheme: global.Ed25519Flag, PrivateKey: "0xa9c6efc5ffc3372f29b108b5ac039f3cf8d411b953b9d212f48b22c3620a5a56"})
+	key, err := keypair.New(keypair.Options{Scheme: config.Ed25519Flag, PrivateKey: "0xa9c6efc5ffc3372f29b108b5ac039f3cf8d411b953b9d212f48b22c3620a5a56"})
 	if err != nil {
 		return nil, err
 	}
