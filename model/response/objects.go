@@ -2,14 +2,18 @@ package response
 
 import (
 	"encoding/json"
-	"github.com/jarvis0919/mgo-go-sdk/model/mgo_types"
 	"github.com/tidwall/gjson"
 )
 
+type Owner struct {
+	AddressOwner string `json:"addressOwner,omitempty"`
+	ObjectOwner  string `json:"objectOwner,omitempty"`
+}
+
 type MgoObjectInfo struct {
-	mgo_types.MgoObjectRef
+	MgoObjectRef
 	Type string `json:"type_"`
-	mgo_types.Owner
+	Owner
 	PreviousTransaction string `json:"previousTransaction"`
 }
 

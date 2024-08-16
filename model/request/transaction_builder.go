@@ -49,3 +49,40 @@ type PayMgoRequest struct {
 	// the gas budget, the transaction will fail if the gas cost exceed the budget
 	GasBudget string `json:"gasBudget"`
 }
+
+type PublishRequest struct {
+	// the transaction signer's Mgo address
+	Sender          string   `json:"sender"`
+	CompiledModules []string `json:"compiled_modules"`
+	Dependencies    []string `json:"dependencies"`
+	// gas object to be used in this transaction, node will pick one from the signer's possession if not provided
+	Gas string `json:"gas"`
+	// the gas budget, the transaction will fail if the gas cost exceed the budget
+	GasBudget string `json:"gasBudget"`
+}
+
+type AddStakeRequest struct {
+	// the transaction signer's Mgo address
+	Signer string `json:"signer"`
+	// Coin<MGO> object to stake
+	Coins []string `json:"coins"`
+	// stake amount
+	Amount string `json:"amount"`
+	// the validator's Mgo address
+	Validator string `json:"validator"`
+	// gas object to be used in this transaction, node will pick one from the signer's possession if not provided
+	Gas string `json:"gas"`
+	// the gas budget, the transaction will fail if the gas cost exceed the budget
+	GasBudget string `json:"gasBudget"`
+}
+
+type WithdrawStakeRequest struct {
+	// the transaction signer's Mgo address
+	Signer string `json:"signer"`
+	// StakedMgo object ID
+	StakedObjectId string `json:"stakedObjectId"`
+	// gas object to be used in this transaction, node will pick one from the signer's possession if not provided
+	Gas string `json:"gas"`
+	// the gas budget, the transaction will fail if the gas cost exceed the budget
+	GasBudget string `json:"gasBudget"`
+}
