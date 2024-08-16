@@ -172,3 +172,108 @@ func TestPayMgo(t *testing.T) {
 	fmt.Println(executeRes)
 
 }
+
+func TestPublish(t *testing.T) {
+	publish, err := devCli.Publish(ctx, request.PublishRequest{
+		Sender:          "0x6d5ae691047b8e55cb3fc84da59651c5bae57d2970087038c196ed501e00697b",
+		CompiledModules: []string{"oRzrCwYAAAALAQAUAhQoAzxrBKcBHAXDAagBB+sC+gII5QVgBsUGJArpBisMlAevAw3DCgYAEwIKAg0CEgIcAh0CHwImAicBKQAEDAAAAAwAAAUDAAADAwABAQQBAAECAgwBAAEFBgIABggEAAgHAgAAGQABAAAOAgEAACoDAQAADwQBAAEQCwEBAAEbGBYBAAElDwsBAAEoGRYBAAErAQsBAAIVEBEBAAIaEQsBAAIoFRYBAAMRDQEBAwQgFxYABh4ABQAHIQ0BAQwHIgkBAQwIIwYHAAkJGgEBABAICAoPDAwOBgoJChASCwoKCgUKBwoEChIUDBsBBwgIAAMHCAEHCAAPBQcIAQcIAAMFBwgICAcIAAsFAQgGDw8PCgIKAgcICAEIBwEGCAgBBQEIAQIJAAUBCAYBCwQBCQABCAABCQABCAMCBwsEAQkAAwILBAEJAAcICAELBQEJAAELBQEIBgcLBAEIBgoCAwMLBAEIBgUPAQIBBgsFAQkAAQMCAwICBwsEAQkACwQBCQABBgsEAQkAAgcKCQAKCQABCAIIQWRtaW5DYXAHQmFsYW5jZQRDb2luDkNyb3NzQ2hhaW5DYWxsB0RlcG9zaXQORGVwb3NpdEFuZENhbGwDTUdPCVR4Q29udGV4dANVSUQGYXBwZW5kB2JhbGFuY2UJY2FsbF9kYXRhCmNhbGxfdmFsdWUEY29pbg5jcm9zc0NoYWluQ2FsbA5kZXBvc2l0QW5kQ2FsbAxkZXN0cm95X3plcm8EZW1pdAVldmVudANldm0MZXZtX3NlcXVlbmNlDGZyb21fYmFsYW5jZQlnYXNfbGltaXQJZ2FzX3ByaWNlAmlkBGluaXQMaW50b19iYWxhbmNlBGpvaW4EbWF0aANtZ28DbmV3Bm9iamVjdANwb3cTcHVibGljX3NoYXJlX29iamVjdA9wdWJsaWNfdHJhbnNmZXIGc2VuZGVyCHNlcXVlbmNlBXNwbGl0CHRyYW5zZmVyCnR4X2NvbnRleHQFdmFsdWUGdmVjdG9yCHdpdGhkcmF3BHplcm8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAICAQkCARIDCAEAAAAAAAAAAwgCAAAAAAAAAAMIAwAAAAAAAAAAAgQYCAckDxQPCgsEAQgGAQIBGAgHAgIGJA8jBQwPFw8WDwsKAgMCARQPAAAAAAEPCgARDhIBCgAuERE4AAsAEQ5KAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4ARIAOAICAQEEAAEVCgIKARAAFEoBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABYhBAkFDQsBAQcEJwoCCwEPABULAhIDOAMCAgEEAAEJCwEPAQsCOAQLBDgFCwM4BgIDAQQAE2IOBUEUBioAAAAAAAAAIQQGBQwLAAELBwEHAicOATgHDAoKAwoEGAoCFgYKAAAAAAAAAAcBBwAXEQ1NGjQMCwoLCwolBCIFKAsAAQsHAQcDJwoHLhERDA0LATgIDAgNCAsLOAQMDAoADwELDDgJAQ4IOAoGAAAAAAAAAAAkBEMLCAsHOAUKDTgGBUcLBwELCDgLQBQAAAAAAAAAAAwJDQkLBTgMDQkLBjgMCgAQAhRKAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWDA4KDgsADwIVCw4LDQsCCwMLBAsJEgI4DQIAAgADAAEA"},
+		Dependencies:    []string{"0x0000000000000000000000000000000000000000000000000000000000000002", "0x0000000000000000000000000000000000000000000000000000000000000001"},
+		Gas:             "0x70bb8f6c182333aecbc475b97780098fa3ee8de61781f84edfa87c64bfe84ca2",
+		GasBudget:       "100000000",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	ed25519Signer, err := getSigner()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	executeRes, err := devCli.SignAndExecuteTransactionBlock(ctx, request.SignAndExecuteTransactionBlockRequest{
+		TxnMetaData: publish,
+		Signer:      ed25519Signer,
+		// only fetch the effects field
+		Options: request.TransactionBlockOptions{
+			ShowInput:    true,
+			ShowRawInput: true,
+			ShowEffects:  true,
+		},
+		RequestType: "WaitForLocalExecution",
+	})
+	if err != nil {
+		fmt.Printf("%v", err)
+		return
+	}
+	fmt.Println(executeRes)
+
+}
+
+func TestRequestAddStake(t *testing.T) {
+	publish, err := devCli.RequestAddStake(ctx, request.AddStakeRequest{
+		Signer:    "0x6d5ae691047b8e55cb3fc84da59651c5bae57d2970087038c196ed501e00697b",
+		Coins:     []string{"0x05678c9529d3354a291fc3235f445dc480ebd476fc281654e4731d2739a5e542"},
+		Amount:    "1000000000",
+		Gas:       "0x577d7a07b9c8fb2e605264ebf88b932a2a3924de82f2c73f86cd008ce2d59c51",
+		GasBudget: "100000000",
+		Validator: "0x8520c27a20d69a275cd9cc8877f850b7a3bfe8ee4bd84a8c7749a43d76a8a380",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	ed25519Signer, err := getSigner()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	executeRes, err := devCli.SignAndExecuteTransactionBlock(ctx, request.SignAndExecuteTransactionBlockRequest{
+		TxnMetaData: publish,
+		Signer:      ed25519Signer,
+		// only fetch the effects field
+		Options: request.TransactionBlockOptions{
+			ShowInput:    true,
+			ShowRawInput: true,
+			ShowEffects:  true,
+		},
+		RequestType: "WaitForLocalExecution",
+	})
+	if err != nil {
+		fmt.Printf("%v", err)
+		return
+	}
+	fmt.Println(executeRes)
+
+}
+
+func TestRequestWithdrawStake(t *testing.T) {
+	publish, err := devCli.RequestWithdrawStake(ctx, request.WithdrawStakeRequest{
+		Signer:         "0x6d5ae691047b8e55cb3fc84da59651c5bae57d2970087038c196ed501e00697b",
+		StakedObjectId: "0x70a3040054dede54d0e99be74ca80e22be5cd5710c57a725d55c2c7640b0028b",
+		Gas:            "0x822f6705df64d073cbfeb2b2ef088f281aa2d486ea9b5c7fbb0ded58171d7f84",
+		GasBudget:      "10000000",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	ed25519Signer, err := getSigner()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	executeRes, err := devCli.SignAndExecuteTransactionBlock(ctx, request.SignAndExecuteTransactionBlockRequest{
+		TxnMetaData: publish,
+		Signer:      ed25519Signer,
+		// only fetch the effects field
+		Options: request.TransactionBlockOptions{
+			ShowInput:    true,
+			ShowRawInput: true,
+			ShowEffects:  true,
+		},
+		RequestType: "WaitForLocalExecution",
+	})
+	if err != nil {
+		fmt.Printf("%v", err)
+		return
+	}
+	fmt.Println(executeRes)
+
+}

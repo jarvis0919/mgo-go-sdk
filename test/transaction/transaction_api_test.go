@@ -36,9 +36,9 @@ func getSigner() (*signer.SignerEd25519, error) {
 func TestMergeCoin(t *testing.T) {
 	mergeCoins, err := devCli.MergeCoins(ctx, request.MergeCoinsRequest{
 		Signer:      "0x6d5ae691047b8e55cb3fc84da59651c5bae57d2970087038c196ed501e00697b",
-		PrimaryCoin: "0x91d2925ccb7be261e9db6f23daf9678a38945cb274014e1521b7441fbbc1a18d",
-		CoinToMerge: "0x94d7a577b3f4f1e3d22739d732948563e5b2a278edc1d6c3a30ea82c584b846c",
-		Gas:         "0x9e9944e470b44c1363409505ef6d154562572a97cbca88dccfd0d972858b54a5",
+		PrimaryCoin: "0x05678c9529d3354a291fc3235f445dc480ebd476fc281654e4731d2739a5e542",
+		CoinToMerge: "0xb421a6f124cc4da9d12b4242a24eeb4be7d6e69871f53cf24ffe9deb35f66ccf",
+		Gas:         "0x822f6705df64d073cbfeb2b2ef088f281aa2d486ea9b5c7fbb0ded58171d7f84",
 		GasBudget:   "10000000",
 	})
 	if err != nil {

@@ -128,3 +128,81 @@ func (c *Client) PayMgo(ctx context.Context, req request.PayMgoRequest) (model.T
 	}
 	return rsp, nil
 }
+
+// Publish implements the method `unsafe_publish`, creates an unsigned transaction to publish a Move package.
+func (c *Client) Publish(ctx context.Context, req request.PublishRequest) (model.TxnMetaData, error) {
+	var rsp model.TxnMetaData
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "unsafe_publish",
+		Params: []interface{}{
+			req.Sender,
+			req.CompiledModules,
+			req.Dependencies,
+			req.Gas,
+			req.GasBudget,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
+
+// RequestAddStake implements the method `unsafe_requestAddStake`, add stake to a validator's staking pool using multiple coins and amount.
+func (c *Client) RequestAddStake(ctx context.Context, req request.AddStakeRequest) (model.TxnMetaData, error) {
+	var rsp model.TxnMetaData
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "unsafe_requestAddStake",
+		Params: []interface{}{
+			req.Signer,
+			req.Coins,
+			req.Amount,
+			req.Validator,
+			req.Gas,
+			req.GasBudget,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
+
+// RequestWithdrawStake implements the method `unsafe_requestWithdrawStake`, withdraw stake from a validator's staking pool.
+func (c *Client) RequestWithdrawStake(ctx context.Context, req request.WithdrawStakeRequest) (model.TxnMetaData, error) {
+	var rsp model.TxnMetaData
+	respBytes, err := c.conn.Request(ctx, httpconn.Operation{
+		Method: "unsafe_requestWithdrawStake",
+		Params: []interface{}{
+			req.Signer,
+			req.StakedObjectId,
+			req.Gas,
+			req.GasBudget,
+		},
+	})
+	if err != nil {
+		return rsp, err
+	}
+	if gjson.ParseBytes(respBytes).Get("error").Exists() {
+		return rsp, errors.New(gjson.ParseBytes(respBytes).Get("error").String())
+	}
+	err = json.Unmarshal([]byte(gjson.ParseBytes(respBytes).Get("result").String()), &rsp)
+	if err != nil {
+		return rsp, err
+	}
+	return rsp, nil
+}
