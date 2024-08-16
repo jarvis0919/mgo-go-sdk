@@ -23,24 +23,24 @@ type Uint256 struct {
 }
 
 func (Bcs) Uint8(b []byte) uint8 {
-	_ = b[0] // bounds check hint to compiler
+	_ = b[0]
 	return uint8(b[0])
 }
 func (Bcs) Uint16(b []byte) uint16 {
-	_ = b[1] // bounds check hint to compiler; see golang.org/issue/14808
+	_ = b[1]
 	return uint16(b[0]) | uint16(b[1])<<8
 }
 func (Bcs) Uint32(b []byte) uint32 {
-	_ = b[3] // bounds check hint to compiler; see golang.org/issue/14808
+	_ = b[3]
 	return uint32(b[0]) | uint32(b[1])<<8 | uint32(b[2])<<16 | uint32(b[3])<<24
 }
 func (Bcs) Uint64(b []byte) uint64 {
-	_ = b[7] // bounds check hint to compiler; see golang.org/issue/14808
+	_ = b[7]
 	return uint64(b[0]) | uint64(b[1])<<8 | uint64(b[2])<<16 | uint64(b[3])<<24 |
 		uint64(b[4])<<32 | uint64(b[5])<<40 | uint64(b[6])<<48 | uint64(b[7])<<56
 }
 func (Bcs) Uint128(b []byte) Uint128 {
-	_ = b[15] // bounds check hint to compiler; see golang.org/issue/14808
+	_ = b[15]
 	low := uint64(b[0]) | uint64(b[1])<<8 | uint64(b[2])<<16 | uint64(b[3])<<24 |
 		uint64(b[4])<<32 | uint64(b[5])<<40 | uint64(b[6])<<48 | uint64(b[7])<<56
 	high := uint64(b[8]) | uint64(b[9])<<8 | uint64(b[10])<<16 | uint64(b[11])<<24 |
@@ -48,9 +48,8 @@ func (Bcs) Uint128(b []byte) Uint128 {
 	return Uint128{High: high, Low: low}
 }
 
-// Uint256 方法
 func (Bcs) Uint256(b []byte) Uint256 {
-	_ = b[31] // bounds check hint to compiler; see golang.org/issue/14808
+	_ = b[31]
 	lowLow := uint64(b[0]) | uint64(b[1])<<8 | uint64(b[2])<<16 | uint64(b[3])<<24 |
 		uint64(b[4])<<32 | uint64(b[5])<<40 | uint64(b[6])<<48 | uint64(b[7])<<56
 	lowHigh := uint64(b[8]) | uint64(b[9])<<8 | uint64(b[10])<<16 | uint64(b[11])<<24 |
@@ -62,36 +61,34 @@ func (Bcs) Uint256(b []byte) Uint256 {
 	return Uint256{HighHigh: highHigh, HighLow: highLow, LowHigh: lowHigh, LowLow: lowLow}
 }
 
-// ULEBEncode 将一个非负整数编码为 ULEB128 字节序列
 func ULEBEncode(num uint64) []byte {
 	var encoded []byte
 
 	for {
-		byteVal := uint8(num & 0x7F) // 取出 num 的最低 7 位
-		num >>= 7                    // 右移 7 位
+		byteVal := uint8(num & 0x7F)
+		num >>= 7
 
 		if num != 0 {
-			byteVal |= 0x80 // 设置最高有效位表示还有后续字节
+			byteVal |= 0x80
 		}
 
 		encoded = append(encoded, byteVal)
 
 		if num == 0 {
-			break // 编码终止
+			break
 		}
 	}
 
 	return encoded
 }
 
-// ULEBDecode 将 ULEB128 字节序列解码为一个非负整数
 func ULEBDecode(encoded []byte) (uint64, int) {
 	var num uint64
 	var k int
 	for i, byteVal := range encoded {
 		k = i
-		num |= uint64(byteVal&0x7F) << (7 * uint(i)) // 取出 byteVal 的低 7 位并左移对应位数
-		if byteVal&0x80 == 0 {                       // 如果最高位为 0，表示结束
+		num |= uint64(byteVal&0x7F) << (7 * uint(i))
+		if byteVal&0x80 == 0 {
 			break
 		}
 	}
@@ -111,7 +108,6 @@ func Bcsde(obj any, data []byte) (err error) {
 
 	var index uint
 	index = 0
-	// fmt.Println(data)
 
 	for i := 0; i < v.NumField(); i++ {
 		field := v.Field(i)
@@ -125,42 +121,34 @@ func Bcsde(obj any, data []byte) (err error) {
 		switch strings.ToLower(fieldType.Name()) {
 		case "address":
 			address := hex.EncodeToString(data[index : index+32])
-			// fmt.Println(address)
 			field.SetString(address)
 			index += 32
 		case "uint8":
 			value := BCS.Uint8(data[index : index+1])
-			// fmt.Println(value)
 			field.SetUint(uint64(value))
 			index++
 		case "uint16":
 			value := BCS.Uint16(data[index : index+2])
-			// fmt.Println(value)
 			field.SetUint(uint64(value))
 			index += 2
 		case "uint32":
 			value := BCS.Uint32(data[index : index+4])
-			// fmt.Println(value)
 			field.SetUint(uint64(value))
 			index += 4
 		case "uint64":
 			value := BCS.Uint64(data[index : index+8])
-			// fmt.Println(value)
 			field.SetUint(value)
 			index += 8
 		case "Uint128":
 			value := BCS.Uint128(data[index : index+16])
-			// fmt.Println(value)
 			field.Set(reflect.ValueOf(value))
 			index += 16
 		case "Uint256":
 			value := BCS.Uint256(data[index : index+32])
-			// fmt.Println(value)
 			field.Set(reflect.ValueOf(value))
 			index += 32
 		case "bool":
 			value := data[index] != 0
-			// fmt.Println(value)
 			field.SetBool(value)
 			index++
 		case "string":
