@@ -72,17 +72,6 @@ type MgoSubscribeTransactionsRequest struct {
 	TransactionFilter interface{} `json:"filter"`
 }
 
-type MgoDevInspectTransactionBlockRequest struct {
-	// the transaction signer's Mgo address
-	Sender string `json:"sender"`
-	// BCS encoded TransactionKind(as opposed to TransactionData, which include gasBudget and gasPrice)
-	TxBytes string `json:"txBytes"`
-	// Gas is not charged, but gas usage is still calculated. Default to use reference gas price
-	GasPrice string `json:"gasPrice"`
-	// The epoch to perform the call. Will be set from the system state object if not provided
-	Epoch string `json:"epoch"`
-}
-
 type MergeCoinsRequest struct {
 	// the transaction signer's Mgo address
 	Signer      string `json:"signer"`
