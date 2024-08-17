@@ -105,3 +105,36 @@ type SplitCoinEqualRequest struct {
 	// the gas budget, the transaction will fail if the gas cost exceed the budget
 	GasBudget string `json:"gasBudget" yaml:"gasBudget"`
 }
+
+// TransactionFilterByFromAddress is a filter for from address
+type TransactionFilterByFromAddress struct {
+	FromAddress string `json:"FromAddress"`
+}
+
+// TransactionFilterByToAddress is a filter for to address
+type TransactionFilterByToAddress struct {
+	ToAddress string `json:"ToAddress"`
+}
+
+// TransactionFilterByInputObject is a filter for input objects
+type TransactionFilterByInputObject struct {
+	// InputObject is the id of the object
+	InputObject string `json:"InputObject"`
+}
+
+// TransactionFilterByChangedObjectFilter is a filter for changed objects
+type TransactionFilterByChangedObjectFilter struct {
+	// ChangedObject is a filter for changed objects
+	ChangedObject string `json:"ChangedObject"`
+}
+
+type MoveFunction struct {
+	Package  string  `json:"package"`
+	Module   *string `json:"module"`
+	Function *string `json:"function"`
+}
+
+// TransactionFilterByMoveFunction is a filter for move functions
+type TransactionFilterByMoveFunction struct {
+	MoveFunction MoveFunction `json:"MoveFunction"`
+}

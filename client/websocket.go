@@ -1,6 +1,9 @@
 package client
 
-import "github.com/jarvis0919/mgo-go-sdk/client/wsconn"
+import (
+	"github.com/jarvis0919/mgo-go-sdk/client/wsconn"
+	"time"
+)
 
 // IMgoWebsocketAPI defines the subscription API related interface, and then implement it by the WebsocketClient.
 type IMgoWebsocketAPI interface {
@@ -15,6 +18,16 @@ type WebsocketClient struct {
 // NewMgoWebsocketClient instantiates the WebsocketClient to call the methods of each module.
 func NewMgoWebsocketClient(rpcUrl string) IMgoWebsocketAPI {
 	conn := wsconn.NewWsConn(rpcUrl)
+	return &WebsocketClient{
+		ISubscribeAPI: &mgoSubscribeImpl{
+			conn: conn,
+		},
+	}
+}
+
+// NewMgoWebsocketClientWithDuration instantiates the WebsocketClient to call the methods of each module, parameter d is for sending heartbeat kit
+func NewMgoWebsocketClientWithDuration(rpcUrl string, d time.Duration) IMgoWebsocketAPI {
+	conn := wsconn.NewWsConnWithDuration(rpcUrl, d)
 	return &WebsocketClient{
 		ISubscribeAPI: &mgoSubscribeImpl{
 			conn: conn,

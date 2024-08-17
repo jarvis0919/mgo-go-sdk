@@ -63,9 +63,9 @@ const (
 	RpcMgoTestnetEndpoint = "https://indexer.testnet.mangonetwork.io/"
 	RpcMgoDevnetEndpoint  = "https://indexer.devnet.mangonetwork.io/"
 
-	WssMgoDevnetEndpoint  = ""
-	WssMgoTestnetEndpoint = ""
-	WssMgoMainnetEndpoint = ""
+	WssMgoDevnetEndpoint  = "wss://fullnode.devnet.mangonetwork.io"
+	WssMgoTestnetEndpoint = "wss://fullnode.testnet.mangonetwork.io"
+	WssMgoMainnetEndpoint = "wss://fullnode.mainnet.mangonetwork.io"
 
 	FaucetTestnetEndpoint = ""
 	FaucetDevnetEndpoint  = ""

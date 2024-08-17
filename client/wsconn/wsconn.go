@@ -12,8 +12,9 @@ import (
 )
 
 type WsConn struct {
-	Conn  *websocket.Conn
-	wsUrl string
+	Conn   *websocket.Conn
+	wsUrl  string
+	ticker *time.Ticker // For heartbeat, default 30s
 }
 
 type CallOp struct {
@@ -30,8 +31,24 @@ func NewWsConn(wsUrl string) *WsConn {
 	}
 
 	return &WsConn{
-		Conn:  conn,
-		wsUrl: wsUrl,
+		Conn:   conn,
+		wsUrl:  wsUrl,
+		ticker: time.NewTicker(30 * time.Second),
+	}
+}
+
+func NewWsConnWithDuration(wsUrl string, d time.Duration) *WsConn {
+	dialer := websocket.Dialer{}
+	conn, _, err := dialer.Dial(wsUrl, nil)
+
+	if err != nil {
+		log.Fatal("Error connecting to Websocket Server:", err, wsUrl)
+	}
+
+	return &WsConn{
+		Conn:   conn,
+		wsUrl:  wsUrl,
+		ticker: time.NewTicker(d),
 	}
 }
 
@@ -69,6 +86,25 @@ func (w *WsConn) Call(ctx context.Context, op CallOp, receiveMsgCh chan []byte) 
 	}
 
 	fmt.Printf("establish successfully, subscriptionID: %d, Waiting to accept data...\n", rsp.Result)
+
+	// Start a ticker for sending pings
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				w.ticker.Stop()
+				return
+			case <-w.ticker.C:
+				// Send a ping
+				if err := w.Conn.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(10*time.Second)); err != nil {
+					log.Println("ping failed:", err)
+					return
+				} else {
+					log.Println("heartbeat...")
+				}
+			}
+		}
+	}()
 
 	go func(conn *websocket.Conn) {
 		for {
