@@ -84,6 +84,74 @@ type MgoXQueryTransactionBlocksRequest struct {
 	DescendingOrder bool `json:"descendingOrder"`
 }
 
+type EventFilterByPackage struct {
+	Package string `json:"Package"`
+}
+
+type MoveModule struct {
+	Package string `json:"package"`
+	Module  string `json:"module"`
+}
+type EventFilterByMoveModule struct {
+	MoveModule MoveModule `json:"MoveModule"`
+}
+
 type EventFilterByMoveEventType struct {
 	MoveEventType string `json:"MoveEventType"`
+}
+
+type EventFilterByMoveEvent struct {
+	MoveEvent string `json:"MoveEvent"`
+}
+
+type MoveEventModule struct {
+	Package string `json:"package"`
+	Module  string `json:"module"`
+	Event   string `json:"event"`
+}
+
+type EventFilterByMoveEventModule struct {
+	MoveEventModule MoveEventModule `json:"MoveEventModule"`
+}
+
+type MoveEventField struct {
+	Path  string `json:"path"`
+	Value string `json:"value"`
+}
+
+type EventFilterByMoveEventField struct {
+	MoveEventField MoveEventField `json:"MoveEventField"`
+}
+
+type EventFilterBySenderAddress struct {
+	SenderAddress string `json:"SenderAddress"`
+}
+
+type EventFilterBySender struct {
+	Sender string `json:"Sender"`
+}
+
+type Recipient struct {
+	AddressOwner string `json:"AddressOwner"`
+}
+type EventFilterByRecipient struct {
+	Recipient Recipient `json:"Recipient"`
+}
+type EventFilterByObject struct {
+	Object string `json:"Object"`
+}
+
+type EventFilterByEventType struct {
+	EventType string `json:"EventType"`
+}
+
+type EventFilterByTransaction struct {
+	Transaction string `json:"Transaction"`
+}
+type TimeRange struct {
+	StartTime string `json:"startTime"`
+	EndTime   string `json:"endTime"`
+}
+type EventFilterByTimeRange struct {
+	TimeRange TimeRange `json:"TimeRange"`
 }

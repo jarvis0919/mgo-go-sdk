@@ -93,3 +93,65 @@ func TestQueryTransactionBlocks(t *testing.T) {
 	}
 	utils.JsonPrint(transactionBlocks)
 }
+
+func TestQueryEventsByMoveEventType(t *testing.T) {
+	rsp, err := devCli.MgoXQueryEvents(ctx, request.MgoXQueryEventsRequest{
+		MgoEventFilter: request.EventFilterByMoveEventType{
+			MoveEventType: "0x0000000000000000000000000000000000000000000000000000000000000003::validator::StakingRequestEvent",
+		},
+		Limit:           20,
+		DescendingOrder: true,
+	})
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	utils.PrettyPrint(rsp)
+}
+
+func TestQueryEventsByTimeRange(t *testing.T) {
+	rsp, err := devCli.MgoXQueryEvents(ctx, request.MgoXQueryEventsRequest{
+		MgoEventFilter: request.EventFilterByTimeRange{
+			request.TimeRange{
+				StartTime: "1723798821000",
+				EndTime:   "1723800621000",
+			},
+		},
+		Limit:           20,
+		DescendingOrder: true,
+	})
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	utils.PrettyPrint(rsp)
+}
+
+func TestQueryEventsByTimeRangeA(t *testing.T) {
+	eventType := request.EventFilterByMoveEventType{
+		MoveEventType: "0x0000000000000000000000000000000000000000000000000000000000000003::validator::StakingRequestEvent",
+	}
+	timeRange := request.TimeRange{
+		StartTime: "1723798821000",
+		EndTime:   "1723800621000",
+	}
+	m := map[string]interface{}{}
+	m["And"] = []interface{}{timeRange, eventType}
+
+	rsp, err := devCli.MgoXQueryEvents(ctx, request.MgoXQueryEventsRequest{
+		MgoEventFilter:  m,
+		Limit:           20,
+		DescendingOrder: true,
+	})
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	utils.PrettyPrint(rsp)
+}
