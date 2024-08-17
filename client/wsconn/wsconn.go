@@ -99,8 +99,6 @@ func (w *WsConn) Call(ctx context.Context, op CallOp, receiveMsgCh chan []byte) 
 				if err := w.Conn.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(10*time.Second)); err != nil {
 					log.Println("ping failed:", err)
 					return
-				} else {
-					log.Println("heartbeat...")
 				}
 			}
 		}
