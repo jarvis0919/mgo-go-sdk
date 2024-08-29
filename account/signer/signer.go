@@ -11,8 +11,9 @@ type Signer interface {
 	PublicKeyBytes() []byte
 	PrivateKeyBytes() []byte
 
-	// MgoPrivateKey() string
+	MgoPrivateKey() string
 
+	PublicBase64Key() string
 	ToMgoAddressDevNet() string
 	ToMgoAddressTestNet() string
 }

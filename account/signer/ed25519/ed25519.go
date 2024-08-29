@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
+	"strings"
 
 	"github.com/jarvis0919/mgo-go-sdk/account/signer"
 	"github.com/jarvis0919/mgo-go-sdk/config"
@@ -26,8 +27,11 @@ func NewEd25519Signer() (*SignerEd25519, error) {
 	}
 	return newEd25519Signer(privateKey)
 }
-func NewEd25519SignerFromPrivateKey(mgoPrivatekey string) (ed25519Signer *SignerEd25519, err error) {
-	seed, err := hex.DecodeString(mgoPrivatekey)
+func NewEd25519SignerFromPrivateKey(privatekey string) (ed25519Signer *SignerEd25519, err error) {
+	if strings.HasPrefix(privatekey, "0x") || strings.HasPrefix(privatekey, "0X") {
+		privatekey = privatekey[2:]
+	}
+	seed, err := hex.DecodeString(privatekey)
 	if err != nil {
 		return nil, err
 	}
@@ -62,10 +66,6 @@ func newEd25519Signer(privateKey ed25519.PrivateKey) (*SignerEd25519, error) {
 	}, nil
 }
 
-func (s *SignerEd25519) Sign(message []byte) []byte {
-	return ed25519.Sign(s.PrivateKey, message)
-}
-
 func (s SignerEd25519) String() string {
 	return fmt.Sprintf("PrivateKey: %s\nPublicKey: %s\nMgoAddressDevNet: %s\nMgoAddressTestNet: %s",
 		hex.EncodeToString(s.PrivateKey),
@@ -73,10 +73,10 @@ func (s SignerEd25519) String() string {
 		s.MgoAddressDevNet, s.MgoAddressTestNet)
 }
 
-// func (s *SignerEd25519) MgoPrivateKey() string {
-// 	mgoPrivateKey, _ := signer.EncodeMgoPrivateKey(s.PrivateKey[:config.PRIVATE_KEY_SIZE], s.Scheme)
-// 	return mgoPrivateKey
-// }
+func (s *SignerEd25519) MgoPrivateKey() string {
+	mgoPrivateKey, _ := signer.EncodeMgoPrivateKey(s.PrivateKey[:config.PRIVATE_KEY_SIZE], config.Ed25519Flag)
+	return mgoPrivateKey
+}
 
 func (s *SignerEd25519) SecretKeyHex() string {
 	return "0x" + hex.EncodeToString(s.PrivateKey)
@@ -112,6 +112,13 @@ func (s *SignerEd25519) ToMgoAddressTestNet() string {
 	return s.MgoAddressTestNet
 }
 
+func (s *SignerEd25519) Sign(message []byte) []byte {
+	return ed25519.Sign(s.PrivateKey, message)
+}
+
+func Verify(publicKey []byte, message []byte, signature []byte) bool {
+	return ed25519.Verify(publicKey, message, signature)
+}
 func mgoAddressDevNet(publicKey []byte) string {
 	tmp := append([]byte{byte(config.Ed25519Flag)}, publicKey...)
 	hexHash := utils.Blake2bv1(tmp)

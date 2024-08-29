@@ -30,7 +30,7 @@ func EncodeBase64(value []byte) string {
 	return base64.StdEncoding.EncodeToString(value)
 }
 
-func DecodeBAse64(value string) []byte {
+func DecodeBase64(value string) []byte {
 	data, err := base64.StdEncoding.DecodeString(value)
 	if err != nil {
 		return nil

@@ -67,8 +67,8 @@ type SignedTransactionSerializedSig struct {
 
 func (k *Keypair) SignPersonalMessage(message []byte, net config.NetIdentity) []byte {
 	message = append(bcs.ULEBEncode(uint64(len(message))), message...)
-	data := k.dataWithIntent(message, config.PersonalMessage)
-	digest := k.digestData(data, net)
+	data := dataWithIntent(message, config.PersonalMessage)
+	digest := digestData(data, net)
 	sigBytes := k.Sign(digest[:])
 	publicKey := k.PublicKeyBytes()
 
@@ -79,8 +79,8 @@ func (k *Keypair) SignPersonalMessage(message []byte, net config.NetIdentity) []
 
 func (k *Keypair) SignTransactionBlock(txn *model.TxnMetaData, net config.NetIdentity) *SignedTransactionSerializedSig {
 	txBytes, _ := base64.StdEncoding.DecodeString(txn.TxBytes)
-	data := k.dataWithIntent(txBytes, config.TransactionData)
-	digest := k.digestData(data, net)
+	data := dataWithIntent(txBytes, config.TransactionData)
+	digest := digestData(data, net)
 
 	sigBytes := k.Sign(digest[:])
 
@@ -90,14 +90,14 @@ func (k *Keypair) SignTransactionBlock(txn *model.TxnMetaData, net config.NetIde
 	}
 }
 
-func (k *Keypair) dataWithIntent(data []byte, intent config.Keytype) []byte {
+func dataWithIntent(data []byte, intent config.Keytype) []byte {
 	header := []byte{byte(intent), 0, 0}
 	markData := make([]byte, len(header)+len(data))
 	copy(markData, header)
 	copy(markData[len(header):], data)
 	return markData
 }
-func (k *Keypair) digestData(data []byte, net config.NetIdentity) []byte {
+func digestData(data []byte, net config.NetIdentity) []byte {
 	if net == config.MgoTestnet {
 		return utils.Keccak256(data)
 	} else {
@@ -113,4 +113,69 @@ func (k *Keypair) toSerializedSignature(signature []byte) string {
 	copy(serializedSignature[1:], signature)
 	copy(serializedSignature[1+signatureLen:], k.PublicKeyBytes())
 	return base64.StdEncoding.EncodeToString(serializedSignature)
+}
+
+type SignatureInfo struct {
+	SerializedSignature []byte
+	SignatureScheme     string
+	Signature           []byte
+	PublicKey           []byte
+	Bytes               []byte
+}
+
+func VerifyPersonalMessage(msg []byte, sig []byte, net config.NetIdentity) bool {
+	scheme := getSignatureScheme(sig)
+	if sig == nil || scheme == "" || len(sig) != config.SIGNATURE_SCHEME_TO_SIZE[scheme] {
+		return false
+	}
+	signatureInfo := parseSignatureInfo(sig, scheme)
+	publickey := signatureInfo.PublicKey
+	msgReserialize := append(bcs.ULEBEncode(uint64(len(msg))), msg...)
+	intentMessage := dataWithIntent(msgReserialize, config.PersonalMessage)
+	digest := digestData(intentMessage, net)
+
+	switch config.SIGNATURE_SCHEME_TO_FLAG[scheme] {
+	case config.Ed25519Flag:
+		return ed25519.Verify(publickey, digest, signatureInfo.Signature)
+	// case config.Secp256k1Flag:
+	// 	secp256k1.Verify(publickey, digest, signatureInfo.Signature)
+	default:
+		return false
+	}
+}
+
+func VerifyTransactionBlock(txn []byte, sig []byte, net config.NetIdentity) bool {
+	scheme := getSignatureScheme(sig)
+	if sig == nil || scheme == "" {
+		return false
+	}
+	signatureInfo := parseSignatureInfo(sig, scheme)
+	publickey := signatureInfo.PublicKey
+
+	intentMessage := dataWithIntent(txn, config.TransactionData)
+	digest := digestData(intentMessage, net)
+
+	switch config.SIGNATURE_SCHEME_TO_FLAG[scheme] {
+	case config.Ed25519Flag:
+		return ed25519.Verify(publickey, digest, signatureInfo.Signature)
+	default:
+		return false
+	}
+}
+func getSignatureScheme(bytes []byte) string {
+	return config.SIGNATURE_FLAG_TO_SCHEME[config.Scheme(bytes[0])]
+}
+
+func parseSignatureInfo(bytes []byte, signatureScheme string) *SignatureInfo {
+	size := config.SIGNATURE_SCHEME_TO_SIZE[signatureScheme]
+	signature := bytes[1 : len(bytes)-size]
+	publicKey := bytes[1+len(signature):]
+
+	return &SignatureInfo{
+		SerializedSignature: bytes,
+		SignatureScheme:     signatureScheme,
+		Signature:           signature,
+		PublicKey:           publicKey,
+		Bytes:               bytes,
+	}
 }

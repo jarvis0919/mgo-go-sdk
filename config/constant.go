@@ -10,14 +10,18 @@ var (
 
 var (
 	SIGNATURE_FLAG_TO_SCHEME = map[Scheme]string{
-		0x00: "Ed25519",
+		0x00: "ED25519",
 		0x01: "Secp256k1",
 		// Add other schemes if applicable
 	}
 	SIGNATURE_SCHEME_TO_FLAG = map[string]Scheme{
-		"Ed25519":   0x00,
+		"ED25519":   0x00,
 		"Secp256k1": 0x01,
 		// Add other schemes if applicable
+	}
+	SIGNATURE_SCHEME_TO_SIZE = map[string]int{
+		"ED25519":   32,
+		"Secp256k1": 33,
 	}
 	DERIVATION_PATH_DEVNET = map[Scheme]string{
 		0x00: `m/44'/784'/0'/0'/0'`,
