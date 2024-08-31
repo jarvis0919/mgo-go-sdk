@@ -124,11 +124,11 @@ type SignatureInfo struct {
 }
 
 func VerifyPersonalMessage(msg []byte, sig []byte, net config.NetIdentity) bool {
-	scheme := getSignatureScheme(sig)
+	scheme := GetSignatureScheme(sig)
 	if sig == nil || scheme == "" || len(sig) != config.SIGNATURE_SCHEME_TO_SIZE[scheme] {
 		return false
 	}
-	signatureInfo := parseSignatureInfo(sig, scheme)
+	signatureInfo := ParseSignatureInfo(sig, scheme)
 	publickey := signatureInfo.PublicKey
 	msgReserialize := append(bcs.ULEBEncode(uint64(len(msg))), msg...)
 	intentMessage := dataWithIntent(msgReserialize, config.PersonalMessage)
@@ -145,11 +145,11 @@ func VerifyPersonalMessage(msg []byte, sig []byte, net config.NetIdentity) bool 
 }
 
 func VerifyTransactionBlock(txn []byte, sig []byte, net config.NetIdentity) bool {
-	scheme := getSignatureScheme(sig)
+	scheme := GetSignatureScheme(sig)
 	if sig == nil || scheme == "" {
 		return false
 	}
-	signatureInfo := parseSignatureInfo(sig, scheme)
+	signatureInfo := ParseSignatureInfo(sig, scheme)
 	publickey := signatureInfo.PublicKey
 
 	intentMessage := dataWithIntent(txn, config.TransactionData)
@@ -162,11 +162,11 @@ func VerifyTransactionBlock(txn []byte, sig []byte, net config.NetIdentity) bool
 		return false
 	}
 }
-func getSignatureScheme(bytes []byte) string {
+func GetSignatureScheme(bytes []byte) string {
 	return config.SIGNATURE_FLAG_TO_SCHEME[config.Scheme(bytes[0])]
 }
 
-func parseSignatureInfo(bytes []byte, signatureScheme string) *SignatureInfo {
+func ParseSignatureInfo(bytes []byte, signatureScheme string) *SignatureInfo {
 	size := config.SIGNATURE_SCHEME_TO_SIZE[signatureScheme]
 	signature := bytes[1 : len(bytes)-size]
 	publicKey := bytes[1+len(signature):]
