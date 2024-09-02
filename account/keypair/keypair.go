@@ -125,7 +125,7 @@ type SignatureInfo struct {
 
 func VerifyPersonalMessage(msg []byte, sig []byte, net config.NetIdentity) bool {
 	scheme := GetSignatureScheme(sig)
-	if sig == nil || scheme == "" || len(sig) != config.SIGNATURE_SCHEME_TO_SIZE[scheme] {
+	if sig == nil || scheme == "" {
 		return false
 	}
 	signatureInfo := ParseSignatureInfo(sig, scheme)

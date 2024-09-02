@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/jarvis0919/mgo-go-sdk/account/signer"
 	"testing"
 
 	"github.com/jarvis0919/mgo-go-sdk/account/keypair"
@@ -17,16 +18,26 @@ var devCli = client.NewMgoClient(config.MgoDevnet)
 func TestSignPersonalMessage(t *testing.T) {
 
 	sig, err := keypair.New(keypair.Options{Scheme: config.Ed25519Flag})
+
 	if err != nil {
 		panic(err)
 	}
-	data := sig.SignPersonalMessage([]byte("hello world"), config.MgoDevnet)
+	signData := sig.SignPersonalMessage([]byte("hello world"), config.MgoDevnet)
 
-	t.Log(data)
-	t.Log(utils.ByteArrayToBase64String(data))
+	t.Log(signData)
+	t.Log(utils.ByteArrayToBase64String(signData))
 
-	result := keypair.VerifyPersonalMessage(data, []byte("hello world"), config.MgoDevnet)
+	result := keypair.VerifyPersonalMessage([]byte("hello world"), signData, config.MgoDevnet)
 	t.Log(result)
+
+	scheme := keypair.GetSignatureScheme(signData)
+	signatureInfo := keypair.ParseSignatureInfo(signData, scheme)
+
+	addressDevNet, err := signer.PublicKeyToMgoAddressDevNet(signatureInfo.PublicKey, config.Ed25519Flag)
+
+	if sig.ToMgoAddressDevNet() != addressDevNet {
+		t.Fatal("addressDevNet not match")
+	}
 }
 
 func TestSignTransactionBlock(t *testing.T) {
